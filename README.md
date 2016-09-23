@@ -1,2 +1,2 @@
-# cFramework
-cFramework is a CFML MVC Framework 
+# cfFramework
+cfFramework is a CFML MVC Framework 
