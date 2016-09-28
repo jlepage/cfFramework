@@ -1,0 +1,3 @@
+<cfoutput>
+#body#
+</cfoutput>
