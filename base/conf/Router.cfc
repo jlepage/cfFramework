@@ -80,6 +80,12 @@ component output='false' accessors='true' {
 			if (structKeyExists(result, 'controllerClass')) {
 				request.route = interpretedRoute;
 				result.controller = getBeanFactory().getBean(result.controllerClass);
+
+				if (!isInstanceOf(result.controller, 'base.controllers.AbstractController')) {
+					throw('Your controller must be an instance of base.controllers.AbstractController');
+
+				}
+
 				return result;
 			}
 

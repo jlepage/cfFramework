@@ -36,6 +36,14 @@ component output="false" {
 		return path;
 	}
 
+	public string function getMethod() {
+		return uCase(CGI.REQUEST_METHOD);
+	}
+
+	public boolean function isMethod(required string methodName) {
+		return (getMethod() == uCase(arguments.methodName));
+	}
+
 	public any function get(required string name, any defaultValue = '') {
 		if (structKeyExists(FORM, arguments.name)) {
 			return FORM[arguments.name];

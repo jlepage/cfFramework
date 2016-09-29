@@ -36,9 +36,9 @@ component output='false' accessors='true' extends='base.App' {
 		addParam('skipURLIndex', false);			// true for skipping "/index.cfm" on your url
 
 		//addParam('authentication', true);			// must be a true for using authentication features
-		//addParam('Session.UserDAO', 'UserDAO'); 	// must implements base.model.users.io.UserDAOInterface
-		//addParam('Session.UserBean', 'User');		// must implements base.model.users.UserInterface
-		//addParam('Session.ProfilBean', 'Profil');	// must implements base.model.users.ProfilInterface
+		//addParam('sessionUserDAO', 'UserDAO'); 	// must implements base.model.users.io.UserDAOInterface
+		//addParam('sessionUserBean', 'User');		// must implements base.model.users.UserInterface
+		//addParam('sessionProfilBean', 'Profil');	// must implements base.model.users.ProfilInterface
 
 
 		addParam('ApplicationName', 'MyOwnApplicationName');

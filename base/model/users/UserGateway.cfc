@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</cffunction>
 
 	<cffunction name="getUserDAO" returntype="base.model.users.io.UserDAOInterface">
-		<cfreturn getBeanFactory().getBean( getConfig().getParam('Session.UserDAO') ) />
+		<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserDAO') ) />
 	</cffunction>
 
 
@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<cfset var user = dao.getByAccess(arguments.login, arguments.password) />
 
 		<cfif isNull(user) || !user.isValid()>
-			<cfreturn getBeanFactory().getBean( getConfig().getParam('Session.UserBean') ) />
+			<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserBean') ) />
 		</cfif>
 
 		<cfreturn user />
@@ -54,13 +54,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<cfif structKeyExists(session, 'user') && session.user neq ''>
 				<cfreturn dao.get(session.user) />
 			</cfif>
-			<cfreturn getBeanFactory().getBean( getConfig().getParam('Session.UserBean') ) />
+			<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserBean') ) />
 		</cfif>
 
 		<cfset var user = dao.getByLogin(getAuthUser()) />
 
 		<cfif isNull(user) || !user.isValid()>
-			<cfreturn getBeanFactory().getBean( getConfig().getParam('Session.UserBean') ) />
+			<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserBean') ) />
 		</cfif>
 
 		<cfreturn user />

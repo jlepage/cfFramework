@@ -1,7 +1,13 @@
 # cfFramework
 cfFramework is a CFML MVC Framework   
 
-Thanks by advance of your intereste on cfFramework.   
+Thanks by advance of your intereste on cfFramework.  
+
+## changes for version 0.9.1
+ - throw exception if controller does not extends AbstractController
+ - clean parameters in App.cfc
+ - move isMethod to HttpRequest
+ - add getMethod to HttpRequest 
 
 
 ## Changes for version 0.9

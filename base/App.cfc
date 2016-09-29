@@ -74,18 +74,29 @@ component accessors='true' {
 		setVersion('0.9');
 		setConfig(createObject('component', 'base.conf.Config').init());
 
-		getConfig().addParam('version', getVersion());
-		getConfig().addParam('beanFactory', 'base.ext.ioc');
-		getConfig().addParam('render', 'RenderBase');
-		getConfig().addParam('viewsPath', '../viewing/views/');
-		getConfig().addParam('layoutsPath', '../viewing/layouts/');
-		getConfig().addParam('widgetsPath', '../viewing/widgets/');
-		getConfig().addParam('defaultController', 'DefaultCtrl');
-		getConfig().addParam('defaultControllerAction', 'defaultAction');
+		addParam('version', getVersion());
 
-		getConfig().addParam('iocPath', '/base,/controllers,/helpers,/model,/services');
-		getConfig().addParam('iocSingletonRegex', '(Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$');
-		getConfig().addParam('iocExcludeArray', ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc']);
+		addParam('viewsPath', '../viewing/views/');
+		addParam('layoutsPath', '../viewing/layouts/');
+		addParam('widgetsPath', '../viewing/widgets/');
+
+		addParam('render', 'RenderBase');
+		addParam('defaultController', 'DefaultCtrl');
+		addParam('defaultControllerAction', 'defaultAction');
+
+		addParam('skipURLIndex', false);
+
+		addParam('authentication', false);
+		addParam('loginURL', '/sign-in');
+
+		addParam('sessionUserDAO', 'UserDAO'); 		// must implements base.model.users.io.UserDAOInterface
+		addParam('sessionUserBean', 'User');		// must implements base.model.users.UserInterface
+		addParam('sessionProfilBean', 'Profil');	// must implements base.model.users.ProfilInterface
+
+		addParam('beanFactory', 'base.ext.ioc');
+		addParam('iocPath', '/base,/controllers,/helpers,/model,/services');
+		addParam('iocSingletonRegex', '(Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$');
+		addParam('iocExcludeArray', ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc']);
 
 		addParamByEnv('debug', 'debug', true);
 

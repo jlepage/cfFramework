@@ -54,7 +54,7 @@ component output='false' accessors='true' {
 
 		if (isNull(user) || user.isNew()) {
 			messages.addError('User invalid or disconnected!');
-			redirect('/sign-in', false);
+			redirect(getConfig().getParam('loginURL'), false);
 			return true;
 		}
 
@@ -63,10 +63,6 @@ component output='false' accessors='true' {
 
 	public base.model.HttpRequest function getRequest() {
 		return getBeanFactory().getBean('HttpRequest');
-	}
-
-	public boolean function isMethod(required string methodName) {
-		return (lCase(CGI.REQUEST_METHOD) == lCase(arguments.methodName));
 	}
 
 	public any function get(required string serviceName) {
@@ -88,8 +84,6 @@ component output='false' accessors='true' {
 		if (arguments.hard) {
 			getPageContext().getResponse().getResponse().setHeader('Location', arguments.path);
 			getPageContext().getResponse().getResponse().setStatus(302);
-			//header statuscode = '302' statustext = 'Moved Temporarily';
-			//header name = 'Location', value = arguments.path ;
 
 		} else {
 			getRouter().processRoute(arguments.path);
