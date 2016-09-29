@@ -95,6 +95,11 @@ component output='false' accessors='true' {
 		result.action = getConfig().getParam('defaultControllerAction');
 		result.controller = getBeanFactory().getBean(result.controllerClass);
 
+		if (!isInstanceOf(result.controller, 'base.controllers.AbstractController')) {
+			throw('Your default controller must be an instance of base.controllers.AbstractController');
+
+		}
+
 		request.route = 'default';
 
 		return result;
