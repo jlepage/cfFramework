@@ -1,7 +1,7 @@
 # cfFramework
 cfFramework is a CFML MVC Framework   
 
-Thanks by advance of your intereste on cfFramework.  
+Thanks by advance for your interest on cfFramework.  
 
 ## changes for version 0.9.1
  - throw exception if controller does not extends AbstractController
@@ -17,11 +17,11 @@ Thanks by advance of your intereste on cfFramework.
  
 
 ### Installation
-Please refere to cfFramework wiki   
+Please refer to cfFramework wiki   
 https://github.com/jlepage/cfFramework/wiki/Install   
 
 ### Configuration
-Please refere to cfFramework wiki too   
+Please refer to cfFramework wiki too   
 https://github.com/jlepage/cfFramework/wiki/Configuration   
 
 
@@ -35,7 +35,7 @@ If you have ideas or wishes features for next version, do not hesitate to ask me
 
 ### IOC use and copyrights
 cfFramework use IOC, DI/1 writed by Sean Corfield   
-Please refere to DI/1 website - https://github.com/framework-one/di1
+Please refer to DI/1 website - https://github.com/framework-one/di1
 
 	Copyright (c) 2010-2015, Sean Corfield
 	Licensed under the Apache License, Version 2.0 (the "License");
