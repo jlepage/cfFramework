@@ -2,19 +2,20 @@
 cfFramework is a CFML MVC Framework   
 
 Thanks by advance for your interest on cfFramework.  
-
-## changes for version 0.9.1
- - throw exception if controller does not extends AbstractController
- - clean parameters in App.cfc
- - move isMethod to HttpRequest
- - add getMethod to HttpRequest 
-
+ 
+## changes for version 0.10
+ - Open inheritance for Config object by App.newConfigObject()
+ - Add rendering time cost on debug mode
+ - Add controller time cost on debug mode 
+ - Add route time cost on debug mode
+ - Add simple cache for router.getFormatedURL
 
 ## Changes for version 0.9
  - full IOC configuration on app parameters  
  - getVersion() and getCopyrights() function on render  
  - first public commit (yeah!)  
  
+For a full list of changes, please see CHANGES.txt
 
 ### Installation
 Please refer to cfFramework wiki   

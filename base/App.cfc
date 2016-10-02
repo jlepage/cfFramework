@@ -67,13 +67,22 @@ component accessors='true' {
 		return Application._cfw.beanFactory;
 	}
 
+	public component function newConfigObject() {
+		return createObject('component', 'base.conf.Config').init();
+	}
+
 	private void function _restartConfig() {
 
 		Application._cfw = structNew();
+		var cfg = newConfigObject();
+
+		if (!isInstanceOf(cfg, 'base.conf.Config')) {
+			throw('Config object must be at least an heritance of base.conf.Config');
+		}
+
+		setConfig(cfg);
 
 		setVersion('0.9');
-		setConfig(createObject('component', 'base.conf.Config').init());
-
 		addParam('version', getVersion());
 
 		addParam('viewsPath', '../viewing/views/');
@@ -172,14 +181,18 @@ component accessors='true' {
 
 	public void function onRequest(string targetPage) output=true {
 		processService();
-		//getRender().view(arguments.targetPage);
 	}
 
 	public void function onRequestEnd() {
 		if (getConfig().getParam('debug')) {
+			var ctrlTime = request.controllerTime - request.renderTime;
 			writeOutput('<br/>Exec Time: ' & (getTickCount() - request.started) & 'ms');
+			writeOutPut('<br/>Routing time: ' & request.routerTime & 'ms');
+			writeOutPut('<br/>Controller time: ' & ctrlTime & 'ms');
+			writeOutPut('<br/>Render time: ' & request.renderTime & 'ms');
 		}
-		if (structKeyExists(URL, 'restart')) {
+
+		if (structKeyExists(URL, 'restart') && getConfig().getParam('debug')) {
 			applicationStop();
 		}
 	}

@@ -139,7 +139,17 @@ component output='false' accessors='true' {
 	}
 
 	public void function render(required string template, struct args = {}, string layout = 'default.cfm') {
+		if (getConfig().getParam('debug')) {
+			request.renderStart = getTickCount();
+
+		}
+
 		writeOutput( view(arguments.template, arguments.args, arguments.layout) );
+
+		if (getConfig().getParam('debug')) {
+			request.renderTime = getTickCount() - request.renderStart;
+
+		}
 	}
 
 	public string function get(required string configParams) {

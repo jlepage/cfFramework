@@ -22,7 +22,10 @@ component output='false' accessors='true' {
 	property base.conf.Config config;
 	property component beanFactory;
 
+	property struct cacheRouteIds;
+
 	public function init() {
+		variables.cacheRouteIds = structNew();
 		setRoutes(arrayNew(1));
 		return this;
 	}
@@ -40,7 +43,12 @@ component output='false' accessors='true' {
 
 	private struct function _getRuleToProcess(required string path) output='true' {
 
-		request.routeDebug = arrayNew(1);
+		if (getConfig().getParam('debug')) {
+			request.routerStart = getTickCount();
+			request.routeDebug = arrayNew(1);
+
+		}
+
 		var routes = getRoutes();
 		var result = {'path' = arguments.path, 'hasParameters' = false, 'parameters' = structNew()};
 
@@ -71,18 +79,25 @@ component output='false' accessors='true' {
 
 			}
 
-			arrayAppend(request.routeDebug, interpretedRoute);
+			if (getConfig().getParam('debug')) {
+				arrayAppend(request.routeDebug, interpretedRoute);
+			}
 
 			if ( routes[i].getRoute() == arguments.path && routes[i].isEnvMatch(getConfig().getEnv()) ) {
 				result = routes[i].completeResults(result);
 			}
 
 			if (structKeyExists(result, 'controllerClass')) {
-				request.route = interpretedRoute;
 				result.controller = getBeanFactory().getBean(result.controllerClass);
 
 				if (!isInstanceOf(result.controller, 'base.controllers.AbstractController')) {
 					throw('Your controller must be an instance of base.controllers.AbstractController');
+
+				}
+
+				if (getConfig().getParam('debug')) {
+					request.route = interpretedRoute;
+					request.routerTime = getTickCount() - request.routerStart;
 
 				}
 
@@ -100,13 +115,21 @@ component output='false' accessors='true' {
 
 		}
 
-		request.route = 'default';
+		if (getConfig().getParam('debug')) {
+			request.routerTime = getTickCount() - request.routerStart;
+			request.route = 'default';
+
+		}
 
 		return result;
 
 	}
 
 	public any function getRouteByID(required string routeId) {
+		if (structKeyExists(variables.cacheRouteIds, arguments.routeId)) {
+			return variables.cacheRouteIds[arguments.routeId];
+		}
+
 		var routes = getRoutes();
 
 		for (var i = 1; i <= arrayLen(routes); i++) {
@@ -149,6 +172,7 @@ component output='false' accessors='true' {
 
 	public void function addRoute(string id, string route, string controller, string action = 'default', string env = '*', string format = 'text/html') {
 		var cur = getBeanFactory().getBean('Route').load(arguments);
+		variables.cacheRouteIds[arguments.id] = cur;
 		arrayAppend(getRoutes(), cur);
 	}
 
@@ -157,10 +181,18 @@ component output='false' accessors='true' {
 			arguments.pathToProcess = getPath();
 		}
 
+		if (getConfig().getParam('debug')) {
+			request.controllerStart = getTickCount();
+		}
+
 		var process = _getRuleToProcess(arguments.pathToProcess);
 		var args = process.parameters;
 		var call = 'process.controller.#process.action#(argumentCollection = args)';
 		evaluate(call);
+
+		if (getConfig().getParam('debug')) {
+			request.controllerTime = getTickCount() - request.controllerStart;
+		}
 	}
 
 }
