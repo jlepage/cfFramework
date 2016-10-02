@@ -3,6 +3,11 @@ cfFramework is a CFML MVC Framework
 
 Thanks by advance for your interest on cfFramework.  
  
+## changes for version 0.10.1
+ - Add preIOCLoadProcess function on App
+ - Add postIOCLoadProcess function on App
+ - Add preConfigProcess function on App
+ 
 ## changes for version 0.10
  - Open inheritance for Config object by App.newConfigObject()
  - Add rendering time cost on debug mode

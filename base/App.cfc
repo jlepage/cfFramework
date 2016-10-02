@@ -81,6 +81,7 @@ component accessors='true' {
 		}
 
 		setConfig(cfg);
+		preConfigProcess();
 
 		setVersion('0.9');
 		addParam('version', getVersion());
@@ -121,9 +122,12 @@ component accessors='true' {
 			setLocale(getConfig().getParam('defaultLocale'));
 		}
 
+		preIOCLoadProcess();
 		_configBeanFactory();
+		postIOCLoadProcess();
 		postConfigProcess();
 
+		postConfigProcess();
 		getBeanFactory().getBean('Router');
 		setRoutes();
 
@@ -155,6 +159,9 @@ component accessors='true' {
 
 	}
 
+	public void function preIOCLoadProcess() {}
+	public void function postIOCLoadProcess() {}
+	public void function preConfigProcess() {}
 	public void function postConfigProcess() {}
 
 
