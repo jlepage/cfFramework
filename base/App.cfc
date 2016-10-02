@@ -83,7 +83,7 @@ component accessors='true' {
 		setConfig(cfg);
 		preConfigProcess();
 
-		setVersion('0.9');
+		setVersion('0.10');
 		addParam('version', getVersion());
 
 		addParam('viewsPath', '../viewing/views/');
