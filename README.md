@@ -1,7 +1,12 @@
 # cfFramework
 cfFramework is a CFML MVC Framework   
 
-Thanks by advance for your interest on cfFramework.  
+Thanks by advance for your interest on cfFramework. 
+
+## changes for version 0.10.2
+ - Add args object on views (aka RenderArguments)
+ - Clean property definition on objects
+ - Add somes samples on default view 
  
 ## changes for version 0.10.1
  - Add preIOCLoadProcess function on App
@@ -14,11 +19,6 @@ Thanks by advance for your interest on cfFramework.
  - Add controller time cost on debug mode 
  - Add route time cost on debug mode
  - Add simple cache for router.getFormatedURL
-
-## Changes for version 0.9
- - full IOC configuration on app parameters  
- - getVersion() and getCopyrights() function on render  
- - first public commit (yeah!)  
  
 For a full list of changes, please see CHANGES.txt
 
