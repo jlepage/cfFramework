@@ -56,7 +56,8 @@ component output='false' accessors='true' extends='base.App' {
 
 	}
 
-	public void function postConfigProcess() {
+
+	public void function postIOCLoadProcess() {
 		//getBeanFactory().addBean('myIOCParam', getConfig().getParam('myAppParam'));
 
 	}

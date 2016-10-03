@@ -18,11 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output='false' accessors='true' {
 
-	property array routes;
-	property base.conf.Config config;
-	property component beanFactory;
+	property type='array' name='routes';
+	property type='base.conf.Config' name='config';
+	property type='component' name='beanFactory';
 
-	property struct cacheRouteIds;
+	property type='struct' name='cacheRouteIds';
 
 	public function init() {
 		variables.cacheRouteIds = structNew();

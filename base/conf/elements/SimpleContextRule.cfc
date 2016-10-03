@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component implements='base.conf.elements.ContextRuleInterface' accessors=true output=false {
 
-	property string hostname;
-	property string uri;
-	property string name;
+	property type='string' name='hostname';
+	property type='string' name='uri';
+	property type='string' name='name';
 
 	public base.conf.elements.SimpleContextRule function init(required string name, string hostname = '', string uri = '') {
 		setHostname(arguments.hostname);

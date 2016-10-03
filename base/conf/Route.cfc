@@ -18,12 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component accessors='true' output='false' persistent='false' {
 
-	property string id;
-	property string route;
-	property string controller;
-	property string action;
-	property string env;
-	property string format;
+	property type='string' name='id';
+	property type='string' name='route';
+	property type='string' name='controller';
+	property type='string' name='action';
+	property type='string' name='env';
+	property type='string' name='format';
 
 
 	public function init() {

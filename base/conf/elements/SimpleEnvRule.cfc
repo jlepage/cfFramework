@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component implements='base.conf.elements.EnvRuleInterface' accessors=true output=false {
 
-	property string hostname;
-	property string ip;
-	property string name;
+	property type='string' name='hostname';
+	property type='string' name='ip';
+	property type='string' name='name';
 
 	public base.conf.elements.SimpleEnvRule function init(required string name, string hostname = '', string ip = '') {
 		setHostname(arguments.hostname);

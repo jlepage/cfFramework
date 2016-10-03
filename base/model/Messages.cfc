@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output="false" {
 
-	property struct messages;
+	property type='struct' name='messages';
 
 	public any function init() {
 		if (structKeyExists(request, 'messages')) {

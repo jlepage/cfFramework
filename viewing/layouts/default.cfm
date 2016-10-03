@@ -1,3 +1,3 @@
 <cfoutput>
-#body#
+#local.body#
 </cfoutput>

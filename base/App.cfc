@@ -194,9 +194,9 @@ component accessors='true' {
 		if (getConfig().getParam('debug')) {
 			var ctrlTime = request.controllerTime - request.renderTime;
 			writeOutput('<br/>Exec Time: ' & (getTickCount() - request.started) & 'ms');
-			writeOutPut('<br/>Routing time: ' & request.routerTime & 'ms');
-			writeOutPut('<br/>Controller time: ' & ctrlTime & 'ms');
-			writeOutPut('<br/>Render time: ' & request.renderTime & 'ms');
+			writeOutPut(' - Routing time: ' & request.routerTime & 'ms');
+			writeOutPut(' - Controller time: ' & ctrlTime & 'ms');
+			writeOutPut(' - Render time: ' & request.renderTime & 'ms');
 		}
 
 		if (structKeyExists(URL, 'restart') && getConfig().getParam('debug')) {

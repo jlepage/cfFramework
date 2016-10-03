@@ -18,15 +18,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output='false' accessors='true' {
 
-	property type='base.conf.Config' name='config';
-	property type='component' name='beanFactory';
+	property type='struct' name='params';
 
-	public base.services.AbstractService function init() {
+
+	public base.model.RenderArguments function init() {
+		variables.params = structNew();
 		return this;
 	}
 
-	public any function get(required string beanName) {
-		return getBeanFactory().getBean(arguments.beanName);
+	public boolean function has(required string varName) output='true' {
+		if (structKeyExists(variables.params, arguments.varName)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public any function get(required string varName, any defaultValue = '') {
+		if (structKeyExists(variables.params, arguments.varName)) {
+			return variables.params[arguments.varName];
+		}
+
+		return arguments.defaultValue;
 	}
 
 }

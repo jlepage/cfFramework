@@ -18,16 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output='false' accessors='true' {
 
-	property string env;
-	property string ip;
-	property struct params;
+	property type='string' name='env';
+	property type='string' name='ip';
+	property type='struct' name='params';
 
-	property struct paramsByIp;
-	property struct paramsByEnv;
-	property struct paramsByHostname;
+	property type='struct' name='paramsByIp';
+	property type='struct' name='paramsByEnv';
+	property type='struct' name='paramsByHostname';
 
-	property array envRules;
-	property array contextRules;
+	property type='array' name='envRules';
+	property type='array' name='contextRules';
 
 	public function init() {
 

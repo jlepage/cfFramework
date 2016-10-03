@@ -18,12 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output='false' accessors='true' {
 
-	property base.conf.Config config;
-	property string context;
-	property base.conf.Router router;
-	property base.model.users.UserGateway userGateway;
-	property component render;
-	property component beanFactory;
+	property type='base.conf.Config' name='config';
+
+	property type='string' name='context';
+	property type='base.conf.Router' name='router';
+	property type='base.model.users.UserGateway' name='userGateway';
+
+	property type='component' name='render';
+	property type='component' name='beanFactory';
 
 	public any function init() {
 		return this;

@@ -19,19 +19,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 component output='false' accessors='true' {
 	pageencoding 'utf-8';
 
-	property base.conf.Config config;
-	property base.conf.Router router;
-	property base.model.users.UserGateway userGateway;
-	property base.ext.ioc BeanFactory;
+	property type='base.conf.Config' name='config';
+	property type='base.conf.Router' name='router';
+	property type='base.model.users.UserGateway' name='userGateway';
+	property type='base.ext.ioc' name='BeanFactory';
 
 	public base.Render function init() {
 		return this;
 	}
 
-	private string function _generateView(required string viewFile, struct args = {}) {
-		debugPath(arguments.viewFile);
-		arguments.args = _populateArgs(arguments.args);
-		structAppend(local, args);
+	private string function _generateView(required string viewFile, struct fctArgs = {}) {
+		if (variables.config.getParam('debug')) {
+			debugPath(arguments.viewFile);
+		}
+
+		arguments.fctArgs = _populateArgs(arguments.fctArgs);
+		structAppend(local, arguments.fctArgs);
+
+		var args = getBeanFactory().getBean('RenderArguments');
+		args.setParams(arguments.fctArgs);
 
 		savecontent variable='response' {
 			include arguments.viewFile;
@@ -39,10 +45,6 @@ component output='false' accessors='true' {
 		}
 
 		return response;
-	}
-
-	public string function getUrl(required string routeId, struct args = {}) {
-		return variables.router.getFormtedUrl(arguments.routeId, arguments.args);
 	}
 
 	public any function getUser() {
@@ -64,14 +66,16 @@ component output='false' accessors='true' {
 		return false;
 	}
 
+	public boolean function isAnonymous() {
+		return ! isLoggedIn();
+	}
+
 	public any function getDebugPath() {
 		return request.path;
 	}
 
 	public void function debugPath(required string viewFile) {
-
 		if (variables.config.getParam('debug')) {
-
 			if (!structKeyExists(request, 'path')) {
 				request.path = arrayNew(1);
 
@@ -79,18 +83,6 @@ component output='false' accessors='true' {
 
 			arrayAppend(request.path, arguments.viewFile);
 		}
-	}
-
-	public string function getVersion() {
-		return 'cfFramework v' & variables.config.getParam('version');
-	}
-
-	public string function getCopyrights() {
-		return 'Copyright (c) ' & dateFormat(now(), 'YYYY') & ', Jerome Lepage (j@cfm.io)';
-	}
-
-	public boolean function isAnonymous() {
-		return ! isLoggedIn();
 	}
 
 	private struct function _populateArgs(required struct args) {
@@ -163,6 +155,18 @@ component output='false' accessors='true' {
 	public string function getContext() {
 		var req = variables.BeanFactory.getBean('HttpRequest');
 		return variables.config.getContext(req);
+	}
+
+	public string function getUrl(required string routeId, struct args = {}) {
+		return variables.router.getFormtedUrl(arguments.routeId, arguments.args);
+	}
+
+	public string function getVersion() {
+		return 'cfFramework v' & variables.config.getParam('version');
+	}
+
+	public string function getCopyrights() {
+		return 'Copyright (c) ' & dateFormat(now(), 'YYYY') & ', Jerome Lepage (j@cfm.io)';
 	}
 
 }
