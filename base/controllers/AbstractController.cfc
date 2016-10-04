@@ -20,7 +20,6 @@ component output='false' accessors='true' {
 
 	property type='base.conf.Config' name='config';
 
-	property type='string' name='context';
 	property type='base.conf.Router' name='router';
 	property type='base.model.users.UserGateway' name='userGateway';
 
@@ -54,7 +53,7 @@ component output='false' accessors='true' {
 		var messages = get('Messages');
 		var user = getUserGateway().getAuthUser();
 
-		if (isNull(user) || user.isNew()) {
+		if (isNull(user) || !user.isValid()) {
 			messages.addError('User invalid or disconnected!');
 			redirect(getConfig().getParam('loginURL'), false);
 			return true;
@@ -72,25 +71,7 @@ component output='false' accessors='true' {
 	}
 
 	public void function redirect(required string path, boolean hard = false) {
-
-		if (!structKeyExists(request, 'redirects')) {
-			request.redirects = 0;
-		}
-
-		request.redirects++;
-
-		if (request.redirects > 10) {
-			throw({message = 'Too much redirections, maybe a infinite loop over here !'});
-		}
-
-		if (arguments.hard) {
-			getPageContext().getResponse().getResponse().setHeader('Location', arguments.path);
-			getPageContext().getResponse().getResponse().setStatus(302);
-
-		} else {
-			getRouter().processRoute(arguments.path);
-
-		}
+		getRouter().redirectTo(arguments.path, arguments.hard);
 	}
 
 }

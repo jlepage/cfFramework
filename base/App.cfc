@@ -31,7 +31,7 @@ component accessors='true' {
 		return this;
 	}
 
-	public void function setVersion(string vers) {
+	public void function setVersion(required string vers) {
 		Application._cfw.version = arguments.vers;
 	}
 
@@ -39,7 +39,7 @@ component accessors='true' {
 		return Application._cfw.version;
 	}
 
-	public void function setConfig(base.conf.Config conf) {
+	public void function setConfig(required base.conf.Config conf) {
 		Application._cfw.config = arguments.conf;
 	}
 
@@ -47,11 +47,19 @@ component accessors='true' {
 		return Application._cfw.config;
 	}
 
+	public void function setEngine(required base.engines.EngineInterface currentEngine) {
+		Application._cfw.engine = arguments.currentEngine;
+	}
+
+	public base.engines.EngineInterface function getEngine() {
+		return Application._cfw.engine;
+	}
+
 	public base.conf.Router function getRouter() {
 		return getBeanFactory().getBean('Router');
 	}
 
-	public void function setRender(base.Render render) {
+	public void function setRender(required base.Render render) {
 		Application._cfw.render = arguments.render;
 	}
 
@@ -59,7 +67,7 @@ component accessors='true' {
 		return Application._cfw.render;
 	}
 
-	public void function setBeanFactory(component factory) {
+	public void function setBeanFactory(required component factory) {
 		Application._cfw.beanFactory = arguments.factory;
 	}
 
@@ -71,14 +79,36 @@ component accessors='true' {
 		return createObject('component', 'base.conf.Config').init();
 	}
 
+	public void function addEngine(required base.engines.EngineInterface newEngine) {
+		arrayAppend(Application._cfw.engines, arguments.newEngine);
+	}
+
+	public base.engines.EngineInterface function detectEngine() {
+		var i = 1;
+
+		for (; i <= arrayLen(Application._cfw.engines); i++) {
+			if (Application._cfw.engines[i].isApplicable(server)) {
+				return Application._cfw.engines[i];
+			}
+		}
+
+		//throw('Your engine is not recognize by cfFramework, please contact us!');
+	}
+
 	private void function _restartConfig() {
 
 		Application._cfw = structNew();
+		Application._cfw.engines = arrayNew(1);
+
 		var cfg = newConfigObject();
 
 		if (!isInstanceOf(cfg, 'base.conf.Config')) {
 			throw('Config object must be at least an heritance of base.conf.Config');
 		}
+
+		addEngine(new base.engines.LuceeEngine());
+		addEngine(new base.engines.RailoEngine());
+		//addEngine(new base.engines.ColdfusionEngine());
 
 		setConfig(cfg);
 		preConfigProcess();
@@ -113,6 +143,8 @@ component accessors='true' {
 		setParams();
 		getConfig().loadParams();
 
+		setEngine(detectEngine());
+
 		if (!isNull(getConfig().getParam('datasource'))) {
 			this.datasource = getConfig().getParam('datasource');
 			this.defaultdatasource = getConfig().getParam('datasource');
@@ -144,6 +176,7 @@ component accessors='true' {
 			var beanFactory = new base.ext.ioc(path, {'singletonPattern' = single, 'exclude'= excludes});
 
 			beanFactory.addBean('config', getConfig());
+			beanFactory.addBean('engine', getEngine());
 
 			if (!isNull(getConfig().getParam('datasource'))) {
 				beanFactory.addBean('datasource', getConfig().getParam('datasource'));

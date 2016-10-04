@@ -20,6 +20,7 @@ component output='false' accessors='true' {
 
 	property type='array' name='routes';
 	property type='base.conf.Config' name='config';
+	property type='base.engines.EngineInterface' name='engine';
 	property type='component' name='beanFactory';
 
 	property type='struct' name='cacheRouteIds';
@@ -193,6 +194,27 @@ component output='false' accessors='true' {
 		if (getConfig().getParam('debug')) {
 			request.controllerTime = getTickCount() - request.controllerStart;
 		}
+	}
+
+	public void function redirectTo(required string path, boolean hard = false) {
+
+		if (arguments.hard) {
+			getEngine().hardRedirect(arguments.path);
+			return;
+		}
+
+		if (!structKeyExists(request, 'redirects')) {
+			request.redirects = 0;
+		}
+
+		request.redirects++;
+
+		if (request.redirects > 10) {
+			throw({message = 'Too much redirections, maybe a infinite loop over here !'});
+		}
+
+		processRoute(arguments.path);
+
 	}
 
 }

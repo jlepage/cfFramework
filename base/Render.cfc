@@ -22,7 +22,7 @@ component output='false' accessors='true' {
 	property type='base.conf.Config' name='config';
 	property type='base.conf.Router' name='router';
 	property type='base.model.users.UserGateway' name='userGateway';
-	property type='base.ext.ioc' name='BeanFactory';
+	property type='component' name='BeanFactory';
 
 	public base.Render function init() {
 		return this;
