@@ -21,7 +21,7 @@ component implements='base.engines.EngineInterface' accessors=true output=false 
 	property type='string' name='name';
 	property type='string' name='version';
 
-	public base.engines.RailoEngine function init() {
+	public base.engines.ColdfusionEngine function init() {
 		return this;
 	}
 
@@ -39,17 +39,6 @@ component implements='base.engines.EngineInterface' accessors=true output=false 
 
 	public string function getVersion() {
 		return variables.version;
-	}
-
-	public boolean function isApplicable(required struct serverInfo) {
-		if (lCase(arguments.serverInfo.coldfusion.productName) == 'coldfusion') {
-			variables.name = arguments.serverInfo.coldfusion.productName;
-			variables.version = arguments.serverInfo.coldfusion.productVersion;
-			return true;
-
-		}
-
-		return false;
 	}
 
 	public void function hardRedirect(required string location) {

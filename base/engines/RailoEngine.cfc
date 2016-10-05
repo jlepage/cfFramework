@@ -41,17 +41,6 @@ component implements='base.engines.EngineInterface' accessors=true output=false 
 		return variables.version;
 	}
 
-	public boolean function isApplicable(required struct serverInfo) {
-		if (structKeyExists(serverInfo, 'railo')) {
-			variables.name = arguments.serverInfo.coldfusion.productName;
-			variables.version = arguments.serverInfo.railo.version;
-			return true;
-
-		}
-
-		return false;
-	}
-
 	public void function hardRedirect(required string location) {
 		header statuscode = '302' statustext = 'Moved Temporarily';
 		header name = 'Location', value = arguments.location ;

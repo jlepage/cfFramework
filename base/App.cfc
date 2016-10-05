@@ -79,36 +79,19 @@ component accessors='true' {
 		return createObject('component', 'base.conf.Config').init();
 	}
 
-	public void function addEngine(required base.engines.EngineInterface newEngine) {
-		arrayAppend(Application._cfw.engines, arguments.newEngine);
-	}
-
 	public base.engines.EngineInterface function detectEngine() {
-		var i = 1;
-
-		for (; i <= arrayLen(Application._cfw.engines); i++) {
-			if (Application._cfw.engines[i].isApplicable(server)) {
-				return Application._cfw.engines[i];
-			}
-		}
-
-		//throw('Your engine is not recognize by cfFramework, please contact us!');
+		var detector = createObject('component', 'base.engines.EngineDetector').init();
+		return detector.getEngine();
 	}
 
 	private void function _restartConfig() {
 
 		Application._cfw = structNew();
-		Application._cfw.engines = arrayNew(1);
-
 		var cfg = newConfigObject();
 
 		if (!isInstanceOf(cfg, 'base.conf.Config')) {
 			throw('Config object must be at least an heritance of base.conf.Config');
 		}
-
-		addEngine(new base.engines.LuceeEngine());
-		addEngine(new base.engines.RailoEngine());
-		//addEngine(new base.engines.ColdfusionEngine());
 
 		setConfig(cfg);
 		preConfigProcess();
@@ -136,7 +119,7 @@ component accessors='true' {
 		addParam('beanFactory', 'base.ext.ioc');
 		addParam('iocPath', '/base,/controllers,/helpers,/model,/services');
 		addParam('iocSingletonRegex', '(Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$');
-		addParam('iocExcludeArray', ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc']);
+		addParam('iocExcludeArray', ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc', 'RailoEngine.cfc']);
 
 		addParamByEnv('debug', 'debug', true);
 
@@ -224,7 +207,7 @@ component accessors='true' {
 	}
 
 	public void function onRequestEnd() {
-		if (getConfig().getParam('debug')) {
+		if (getConfig().getParam('debug') && structKeyExists(request, 'renderTime')) {
 			var ctrlTime = request.controllerTime - request.renderTime;
 			writeOutput('<br/>Exec Time: ' & (getTickCount() - request.started) & 'ms');
 			writeOutPut(' - Routing time: ' & request.routerTime & 'ms');

@@ -41,17 +41,6 @@ component implements='base.engines.EngineInterface' accessors=true output=false 
 		return variables.version;
 	}
 
-	public boolean function isApplicable(required struct serverInfo) output=true {
-		if (structKeyExists(serverInfo, 'lucee')) {
-			variables.name = arguments.serverInfo.coldfusion.productName;
-			variables.version = arguments.serverInfo.lucee.version;
-			return true;
-
-		}
-
-		return false;
-	}
-
 	public void function hardRedirect(required string location) {
 		getPageContext().getResponse().getResponse().setHeader('Location', arguments.location);
 		getPageContext().getResponse().getResponse().setStatus(302);

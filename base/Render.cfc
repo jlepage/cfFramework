@@ -158,7 +158,7 @@ component output='false' accessors='true' {
 	}
 
 	public string function getUrl(required string routeId, struct args = {}) {
-		return variables.router.getFormtedUrl(arguments.routeId, arguments.args);
+		return variables.router.getFormatedUrl(arguments.routeId, arguments.args);
 	}
 
 	public string function getVersion() {

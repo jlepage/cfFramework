@@ -32,4 +32,8 @@ component output='false' extends='base.controllers.AbstractController' accessors
 		getRender().render('index.cfm', args, 'default.cfm');
 	}
 
+	public void function testRedirectHard() {
+		redirect( getURL('home'), true );
+	}
+
 }

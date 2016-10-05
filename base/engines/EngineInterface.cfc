@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 interface {
 
-	public boolean function isApplicable(required struct serverInfo);
-
 	public void function setName(required string name);
 	public string function getName();
 

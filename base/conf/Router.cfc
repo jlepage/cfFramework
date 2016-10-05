@@ -140,7 +140,7 @@ component output='false' accessors='true' {
 		}
 	}
 
-	public string function getFormtedUrl(required string routeId, struct args = {}) {
+	public string function getFormatedUrl(required string routeId, struct args = {}) {
 		var route = getRouteByID(arguments.routeId);
 		var skip = getConfig().getParam('skipURLIndex');
 

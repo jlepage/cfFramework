@@ -35,6 +35,10 @@ component output='false' accessors='true' {
 		return getConfig().getContext(req);
 	}
 
+	public string function getURL(required string routeId, struct args = {}) {
+		return getRouter().getFormatedURL(arguments.routeId, arguments.args);
+	}
+
 	public boolean function signInUser(required string login, required string password) {
 		var user = getUserGateway().findUser(arguments.login, arguments.password);
 		if (user.isValid()) {
