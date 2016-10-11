@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output='false' accessors='true' extends='base.App' {
+component output='false' accessors='true' extends='cffwk.App' {
 	pageencoding 'utf-8';
 
 	this.sessionTimeout = createTimeSpan(0, 2, 0, 0);
@@ -24,11 +24,11 @@ component output='false' accessors='true' extends='base.App' {
 
 	public void function setParams() {
 
-		addEnvRule( new base.conf.elements.SimpleEnvRule(hostname = 'cfw.local', name = 'debug') );
-		addEnvRule( new base.conf.elements.SimpleEnvRule(ip = 'cfframework.net', name = 'prod') );
+		addEnvRule( new cffwk.base.conf.elements.SimpleEnvRule(hostname = 'cfw.local', name = 'debug') );
+		addEnvRule( new cffwk.base.conf.elements.SimpleEnvRule(ip = 'cfframework.net', name = 'prod') );
 
-		addContextRule( new base.conf.elements.SimpleContextRule(hostname = 'cfframework.local', name = 'full') );
-		addContextRule( new base.conf.elements.SimpleContextRule(hostname = 'cfw.local', name = 'short') );
+		addContextRule( new cffwk.base.conf.elements.SimpleContextRule(hostname = 'cfframework.local', name = 'full') );
+		addContextRule( new cffwk.base.conf.elements.SimpleContextRule(hostname = 'cfw.local', name = 'short') );
 
 		addParamByEnv('debug', 'debug', true);
 
@@ -36,9 +36,9 @@ component output='false' accessors='true' extends='base.App' {
 		addParam('skipURLIndex', false);			// true for skipping "/index.cfm" on your url
 
 		//addParam('authentication', true);			// must be a true for using authentication features
-		//addParam('sessionUserDAO', 'UserDAO'); 	// must implements base.model.users.io.UserDAOInterface
-		//addParam('sessionUserBean', 'User');		// must implements base.model.users.UserInterface
-		//addParam('sessionProfilBean', 'Profil');	// must implements base.model.users.ProfilInterface
+		//addParam('sessionUserDAO', 'UserDAO'); 	// must implements cffwk.model.users.io.UserDAOInterface
+		//addParam('sessionUserBean', 'User');		// must implements cffwk.model.users.UserInterface
+		//addParam('sessionProfilBean', 'Profil');	// must implements cffwk.model.users.ProfilInterface
 
 
 		addParam('ApplicationName', 'MyOwnApplicationName');

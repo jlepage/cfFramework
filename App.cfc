@@ -31,7 +31,7 @@ component accessors='true' {
 		return this;
 	}
 
-	public void function setVersion(string vers) {
+	public void function setVersion(required string vers) {
 		Application._cfw.version = arguments.vers;
 	}
 
@@ -51,7 +51,7 @@ component accessors='true' {
 		Application._cfw.engine = arguments.currentEngine;
 	}
 
-	public base.engines.EngineInterface function getEngine() {
+	public cffwk.base.engines.EngineInterface function getEngine() {
 		return Application._cfw.engine;
 	}
 
@@ -126,6 +126,8 @@ component accessors='true' {
 		setParams();
 		getConfig().loadParams();
 
+		_checkViewFolders();
+
 		setEngine(detectEngine());
 
 		if (!isNull(getConfig().getParam('datasource'))) {
@@ -156,7 +158,6 @@ component accessors='true' {
 		}
 
 		if (!directoryExists(arguments.folder)) {
-
 			if (directoryExists(basePath & arguments.folder)) {
 				 return arguments.folder;
 			}
@@ -166,24 +167,18 @@ component accessors='true' {
 			}
 
 			throw ('No good path found for your views/layouts, please check your config (' & arguments.folder & ')!' );
-
 		}
 
 		return arguments.folder;
-
 	}
 
 	private void function _checkViewFolders() {
-
 		getConfig().setParam('viewsPath', _detectCorrectPath(getConfig().getParam('viewsPath')) );
 		getConfig().setParam('layoutsPath', _detectCorrectPath(getConfig().getParam('layoutsPath')) );
 		getConfig().setParam('widgetsPath', _detectCorrectPath(getConfig().getParam('widgetsPath')) );
-
 	}
 
 	private void function _configBeanFactory() {
-
-		_checkViewFolders();
 
 		if (getConfig().getParam('beanFactory') == 'cffwk.ext.ioc') {
 

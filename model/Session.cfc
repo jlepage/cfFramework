@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output="false" {
+component output='false' {
 
-	property type="cffwk.model.users.UserGateway" name="UserGateway";
+	property type='cffwk.model.users.UserGateway' name='UserGateway';
 
 	public cffwk.model.Session function init() {
 		return this;

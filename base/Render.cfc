@@ -60,7 +60,6 @@ component output='false' accessors='true' {
 	public boolean function isLoggedIn() {
 		if (isObject(getUser())) {
 			return true;
-
 		}
 
 		return false;
@@ -86,9 +85,7 @@ component output='false' accessors='true' {
 	}
 
 	private struct function _populateArgs(required struct args) {
-
 		if (!structKeyExists(arguments.args, 'messages')) {
-
 			if (structKeyExists(request, 'messages')) {
 				arguments.args['messages'] = request.messages;
 
@@ -113,7 +110,6 @@ component output='false' accessors='true' {
 			arguments.args['path'] = getDebugPath();
 		}
 
-
 		return arguments.args;
 	}
 
@@ -133,14 +129,12 @@ component output='false' accessors='true' {
 	public void function render(required string template, struct args = {}, string layout = 'default.cfm') {
 		if (getConfig().getParam('debug')) {
 			request.renderStart = getTickCount();
-
 		}
 
 		writeOutput( view(arguments.template, arguments.args, arguments.layout) );
 
 		if (getConfig().getParam('debug')) {
 			request.renderTime = getTickCount() - request.renderStart;
-
 		}
 	}
 
@@ -153,8 +147,15 @@ component output='false' accessors='true' {
 	}
 
 	public string function getContext() {
-		var req = variables.BeanFactory.getBean('HttpRequest');
-		return variables.config.getContext(req);
+		return variables.config.getContext(getHttpRequest());
+	}
+
+	public string function getHttpRequest() {
+		return variables.BeanFactory.getBean('HttpRequest');
+	}
+
+	public string function getSession() {
+		return variables.BeanFactory.getBean('Session');
 	}
 
 	public string function getUrl(required string routeId, struct args = {}) {
