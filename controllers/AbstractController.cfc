@@ -18,17 +18,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output='false' accessors='true' {
 
-	property type='base.conf.Config' name='config';
+	property type='cffwk.base.conf.Config' name='config';
 
-	property type='string' name='context';
-	property type='base.conf.Router' name='router';
-	property type='base.model.users.UserGateway' name='userGateway';
+	property type='cffwk.base.Router' name='router';
+	property type='cffwk.model.users.UserGateway' name='userGateway';
 
 	property type='component' name='render';
 	property type='component' name='beanFactory';
 
-	public any function init() {
+	public cffwk.controllers.AbstractController function init() {
 		return this;
+	}
+
+	public cffwk.model.HttpRequest function getRequest() {
+		return getBeanFactory().getBean('HttpRequest');
+	}
+
+	public string function getSession() {
+		return getBeanFactory().getBean('Session');
 	}
 
 	public string function getContext() {
@@ -54,7 +61,7 @@ component output='false' accessors='true' {
 		var messages = get('Messages');
 		var user = getUserGateway().getAuthUser();
 
-		if (isNull(user) || user.isNew()) {
+		if (isNull(user) || !user.isValid()) {
 			messages.addError('User invalid or disconnected!');
 			redirect(getConfig().getParam('loginURL'), false);
 			return true;
@@ -63,34 +70,16 @@ component output='false' accessors='true' {
 		return false;
 	}
 
-	public base.model.HttpRequest function getRequest() {
-		return getBeanFactory().getBean('HttpRequest');
-	}
-
 	public any function get(required string serviceName) {
 		return getBeanFactory().getBean(arguments.serviceName);
 	}
 
+	public string function getURL(required string routeId, struct args = {}) {
+		return getRouter().getFormatedURL(arguments.routeId, arguments.args);
+	}
+
 	public void function redirect(required string path, boolean hard = false) {
-
-		if (!structKeyExists(request, 'redirects')) {
-			request.redirects = 0;
-		}
-
-		request.redirects++;
-
-		if (request.redirects > 10) {
-			throw({message = 'Too much redirections, maybe a infinite loop over here !'});
-		}
-
-		if (arguments.hard) {
-			getPageContext().getResponse().getResponse().setHeader('Location', arguments.path);
-			getPageContext().getResponse().getResponse().setStatus(302);
-
-		} else {
-			getRouter().processRoute(arguments.path);
-
-		}
+		getRouter().redirectTo(arguments.path, arguments.hard);
 	}
 
 }

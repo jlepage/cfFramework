@@ -27,8 +27,12 @@
 		ID: #id# - myVar<br/>
 		Revision: #revision#<br/>
 	</cfif>
+
+	<a href="#getURL('testRedirect')#">Test Redirect</a>
 	<br/>
 	Context: #getContext()# - getContext()<br/>
 	<br/>
 	#getVersion()# - #getCopyRights()#
+
+	<br/>
 </cfoutput>

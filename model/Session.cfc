@@ -16,41 +16,37 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output="false" {
+component output='false' {
 
-	public any function init() {
+	property type='cffwk.model.users.UserGateway' name='UserGateway';
+
+	public cffwk.model.Session function init() {
 		return this;
 	}
 
-	public string function getHostname() {
-		return CGI.SERVER_NAME;
+	public any function getSessionLife() {
+		return getTickCount() - SESSION.started;
 	}
 
-	public string function getUri() {
-		var path = CGI.SCRIPT_NAME;
+	public any function getUser() {
+		return getUserGateway().getAuthUser();
+	}
 
-		if (CGI.PATH_INFO != '') {
-			path = CGI.PATH_INFO;
+	public any function set(required string name, required any value) {
+		SESSION[arguments.name] = arguments.value;
+	}
+
+	public any function has(required string name) {
+		if (structKeyExists(SESSION, arguments.name)) {
+			return true;
 		}
 
-		return path;
-	}
-
-	public string function getMethod() {
-		return uCase(CGI.REQUEST_METHOD);
-	}
-
-	public boolean function isMethod(required string methodName) {
-		return (getMethod() == uCase(arguments.methodName));
+		return false;
 	}
 
 	public any function get(required string name, any defaultValue = '') {
-		if (structKeyExists(FORM, arguments.name)) {
-			return FORM[arguments.name];
-		}
-
-		if (structKeyExists(URL, arguments.name)) {
-			return URL[arguments.name];
+		if (structKeyExists(SESSION, arguments.name)) {
+			return SESSION[arguments.name];
 		}
 
 		return arguments.defaultValue;

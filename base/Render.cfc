@@ -19,12 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 component output='false' accessors='true' {
 	pageencoding 'utf-8';
 
-	property type='base.conf.Config' name='config';
-	property type='base.conf.Router' name='router';
-	property type='base.model.users.UserGateway' name='userGateway';
-	property type='base.ext.ioc' name='BeanFactory';
+	property type='cffwk.base.conf.Config' name='config';
+	property type='cffwk.base.Router' name='router';
+	property type='cffwk.model.users.UserGateway' name='userGateway';
+	property type='component' name='BeanFactory';
 
-	public base.Render function init() {
+	public cffwk.base.Render function init() {
 		return this;
 	}
 
@@ -36,7 +36,7 @@ component output='false' accessors='true' {
 		arguments.fctArgs = _populateArgs(arguments.fctArgs);
 		structAppend(local, arguments.fctArgs);
 
-		var args = getBeanFactory().getBean('RenderArguments');
+		var args = variables.beanFactory.getBean('RenderArguments');
 		args.setParams(arguments.fctArgs);
 
 		savecontent variable='response' {
@@ -60,7 +60,6 @@ component output='false' accessors='true' {
 	public boolean function isLoggedIn() {
 		if (isObject(getUser())) {
 			return true;
-
 		}
 
 		return false;
@@ -86,9 +85,7 @@ component output='false' accessors='true' {
 	}
 
 	private struct function _populateArgs(required struct args) {
-
 		if (!structKeyExists(arguments.args, 'messages')) {
-
 			if (structKeyExists(request, 'messages')) {
 				arguments.args['messages'] = request.messages;
 
@@ -113,7 +110,6 @@ component output='false' accessors='true' {
 			arguments.args['path'] = getDebugPath();
 		}
 
-
 		return arguments.args;
 	}
 
@@ -133,14 +129,12 @@ component output='false' accessors='true' {
 	public void function render(required string template, struct args = {}, string layout = 'default.cfm') {
 		if (getConfig().getParam('debug')) {
 			request.renderStart = getTickCount();
-
 		}
 
 		writeOutput( view(arguments.template, arguments.args, arguments.layout) );
 
 		if (getConfig().getParam('debug')) {
 			request.renderTime = getTickCount() - request.renderStart;
-
 		}
 	}
 
@@ -153,12 +147,19 @@ component output='false' accessors='true' {
 	}
 
 	public string function getContext() {
-		var req = variables.BeanFactory.getBean('HttpRequest');
-		return variables.config.getContext(req);
+		return variables.config.getContext(getHttpRequest());
+	}
+
+	public cffwk.model.HttpRequest function getHttpRequest() {
+		return variables.BeanFactory.getBean('HttpRequest');
+	}
+
+	public cffwk.model.Session function getSession() {
+		return variables.BeanFactory.getBean('Session');
 	}
 
 	public string function getUrl(required string routeId, struct args = {}) {
-		return variables.router.getFormtedUrl(arguments.routeId, arguments.args);
+		return variables.router.getFormatedUrl(arguments.routeId, arguments.args);
 	}
 
 	public string function getVersion() {

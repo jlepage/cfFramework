@@ -1,5 +1,12 @@
  This is a list of changes on cfframework
  
+## changes for version 0.11
+ - moving the framework under a unique folder cffwk
+ - Add Session object
+ - Correct HttpRequest
+ - Add Engine detector and engine implementation for specifics
+
+ 
 ## changes for version 0.10.2
  - Add args object on views (aka RenderArguments)
  - Clean property definition on objects

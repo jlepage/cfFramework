@@ -18,7 +18,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 interface {
 
-	public boolean function isApplicable(required cffwk.model.HttpRequest httpRequest);
-	public string function getContextName();
+	public boolean function isValid();
+
+	public base.model.users.ProfilInterface function getProfil();
+	public void function setProfil(required cffwk.model.users.ProfilInterface profil);
+
+	public void function setLogin(required string login);
+	public string function getLogin();
+
+	public void function setEmail(required string email);
+	public string function getEmail();
+
+	public void function setPassword(required string password);
+	public string function getPassword();
+
+	public void function cryptPassword(required string password);
+	public boolean function isPasswordMatch(required string password);
 
 }

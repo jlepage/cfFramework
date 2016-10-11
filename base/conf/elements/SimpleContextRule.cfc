@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component implements='base.conf.elements.ContextRuleInterface' accessors=true output=false {
+component implements='cffwk.base.conf.elements.ContextRuleInterface' accessors=true output=false {
 
 	property type='string' name='hostname';
 	property type='string' name='uri';
 	property type='string' name='name';
 
-	public base.conf.elements.SimpleContextRule function init(required string name, string hostname = '', string uri = '') {
+	public cffwk.base.conf.elements.SimpleContextRule function init(required string name, string hostname = '', string uri = '') {
 		setHostname(arguments.hostname);
 		setUri(arguments.uri);
 		setName(arguments.name);
@@ -33,7 +33,7 @@ component implements='base.conf.elements.ContextRuleInterface' accessors=true ou
 		return getName();
 	}
 
-	public boolean function isApplicable(required base.model.HttpRequest httpRequest) {
+	public boolean function isApplicable(required cffwk.model.HttpRequest httpRequest) {
 
 		if (variables.hostname != '' && arguments.httpRequest.getHostname() == variables.hostname) {
 			return true;

@@ -21,7 +21,7 @@ component output='false' accessors='true' {
 	property type='struct' name='params';
 
 
-	public base.model.RenderArguments function init() {
+	public cffwk.model.RenderArguments function init() {
 		variables.params = structNew();
 		return this;
 	}

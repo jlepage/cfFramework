@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output='false' extends='base.controllers.AbstractController' accessors='true' {
+component output='false' extends='cffwk.controllers.AbstractController' accessors='true' {
 	pageencoding 'utf-8';
 
 	public void function defaultAction() {
@@ -30,6 +30,10 @@ component output='false' extends='base.controllers.AbstractController' accessors
 	public void function test(required string id, required string revision) {
 		var args = {'id' = arguments.id, 'revision' = arguments.revision};
 		getRender().render('index.cfm', args, 'default.cfm');
+	}
+
+	public void function testRedirectHard() {
+		redirect( getURL('home'), true );
 	}
 
 }

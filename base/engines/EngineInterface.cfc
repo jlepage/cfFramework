@@ -16,17 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output='false' accessors='true' {
+interface {
 
-	property type='base.conf.Config' name='config';
-	property type='component' name='beanFactory';
+	public void function setName(required string name);
+	public string function getName();
 
-	public base.services.AbstractService function init() {
-		return this;
-	}
+	public void function setVersion(required string version);
+	public string function getVersion();
 
-	public any function get(required string beanName) {
-		return getBeanFactory().getBean(arguments.beanName);
-	}
+	public void function hardRedirect(required string location);
 
 }

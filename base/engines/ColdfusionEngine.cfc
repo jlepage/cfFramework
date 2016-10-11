@@ -16,35 +16,34 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component implements='cffwk.base.conf.elements.EnvRuleInterface' accessors=true output=false {
+component implements='cffwk.base.engines.EngineInterface' accessors=true output=false {
 
-	property type='string' name='hostname';
-	property type='string' name='ip';
 	property type='string' name='name';
+	property type='string' name='version';
 
-	public cffwk.base.conf.elements.SimpleEnvRule function init(required string name, string hostname = '', string ip = '') {
-		setHostname(arguments.hostname);
-		setIp(arguments.ip);
-		setName(arguments.name);
+	public cffwk.base.engines.ColdfusionEngine function init() {
 		return this;
 	}
 
-	public string function getEnvName() {
-		return getName();
+	public void function setName(required string name) {
+		variables.name = arguments.name;
 	}
 
-	public boolean function isApplicable(string hostname = '', string ip = '') {
-
-		if (trim(arguments.hostname) != '' && arguments.hostname == variables.hostname) {
-			return true;
-		}
-
-		if (trim(arguments.ip) != '' && arguments.ip == variables.ip) {
-			return true;
-		}
-
-		return false;
+	public string function getName(){
+		return variables.name;
 	}
 
+	public void function setVersion(required string version) {
+		variables.version = arguments.version;
+	}
+
+	public string function getVersion() {
+		return variables.version;
+	}
+
+	public void function hardRedirect(required string location) {
+		getPageContext().getResponse().getResponse().setHeader('Location', arguments.location);
+		getPageContext().getResponse().getResponse().setStatus(302);
+	}
 
 }

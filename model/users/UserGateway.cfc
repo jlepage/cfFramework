@@ -18,19 +18,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent accessors="true" output="false">
 
-	<cfproperty name="config" type="base.conf.Config" />
+	<cfproperty name="config" type="cffwk.base.conf.Config" />
 	<cfproperty name="beanFactory" type="component" />
 
-	<cffunction name="init" returntype="base.model.users.UserGateway">
+	<cffunction name="init" returntype="cffwk.model.users.UserGateway">
 		<cfreturn this />
 	</cffunction>
 
-	<cffunction name="getUserDAO" returntype="base.model.users.io.UserDAOInterface">
+	<cffunction name="getUserDAO" returntype="cffwk.model.users.io.UserDAOInterface">
 		<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserDAO') ) />
 	</cffunction>
 
 
-	<cffunction name="findUser" returntype="base.model.users.UserInterface">
+	<cffunction name="findUser" returntype="cffwk.model.users.UserInterface">
 		<cfargument name="login" type="string" required="true" />
 		<cfargument name="password" type="string" required="true" />
 
@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</cffunction>
 
 
-	<cffunction name="getAuthUser" returntype="base.model.users.UserInterface">
+	<cffunction name="getAuthUser" returntype="cffwk.model.users.UserInterface">
 
 		<cfset var dao = getUserDAO() />
 
