@@ -24,7 +24,8 @@ component output='false' accessors='true' extends='cffwk.App' {
 
 	public void function setParams() {
 
-		addEnvRule( new cffwk.base.conf.elements.SimpleEnvRule(hostname = 'cfw.local', name = 'debug') );
+		addEnvRule( new cffwk.base.conf.elements.SimpleEnvRule(hostname = 'cffwk.local', name = 'debug') );
+		addEnvRule( new cffwk.base.conf.elements.SimpleEnvRule(hostname = 'cffwktest.local', name = 'debug') );
 		addEnvRule( new cffwk.base.conf.elements.SimpleEnvRule(ip = 'cfframework.net', name = 'prod') );
 
 		addContextRule( new cffwk.base.conf.elements.SimpleContextRule(hostname = 'cfframework.local', name = 'full') );
@@ -65,6 +66,7 @@ component output='false' accessors='true' extends='cffwk.App' {
 	public void function setRoutes() {
 		getRouter().addRoute(id='home', route='/home', controller='DefaultCtrl', action='home');
 		getRouter().addRoute(id='testURL', route='/test/{id}/{revision}', controller='DefaultCtrl', action='test');
+		getRouter().addRoute(id='testRedirect', route='/redirectHard', controller='DefaultCtrl', action='testRedirectHard');
 	}
 
 }

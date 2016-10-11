@@ -3,22 +3,16 @@ cfFramework is a CFML MVC Framework
 
 Thanks by advance for your interest on cfFramework. 
 
+## changes for version 0.11
+ - moving the framework under a unique folder cffwk
+ - Add Session object
+ - Correct HttpRequest
+ - Add Engine detector and engine implementation for specifics
+ 
 ## changes for version 0.10.2
  - Add args object on views (aka RenderArguments)
  - Clean property definition on objects
  - Add somes samples on default view 
- 
-## changes for version 0.10.1
- - Add preIOCLoadProcess function on App
- - Add postIOCLoadProcess function on App
- - Add preConfigProcess function on App
- 
-## changes for version 0.10
- - Open inheritance for Config object by App.newConfigObject()
- - Add rendering time cost on debug mode
- - Add controller time cost on debug mode 
- - Add route time cost on debug mode
- - Add simple cache for router.getFormatedURL
  
 For a full list of changes, please see CHANGES.txt
 
