@@ -29,7 +29,7 @@ component output='false' accessors='true' {
 	property type='array' name='envRules';
 	property type='array' name='contextRules';
 
-	public function init() {
+	public cffwk.base.conf.Config function init() {
 
 		setEnv('_default_');
 		setEnvRules(arrayNew(1));
@@ -61,7 +61,7 @@ component output='false' accessors='true' {
 		}
 	}
 
-	public string function getContext(required base.model.HttpRequest httpRequest) {
+	public string function getContext(required cffwk.model.HttpRequest httpRequest) {
 		var contextRules = getContextRules();
 
 		for (var i = 1; i <= arrayLen(contextRules); i++) {
@@ -102,11 +102,11 @@ component output='false' accessors='true' {
 
 	}
 
-	public void function addEnvRule(required base.conf.elements.EnvRuleInterface envRule) {
+	public void function addEnvRule(required cffwk.base.conf.elements.EnvRuleInterface envRule) {
 		arrayAppend(getEnvRules(), arguments.envRule);
 	}
 
-	public void function addContextRule(required base.conf.elements.ContextRuleInterface contextRule) {
+	public void function addContextRule(required cffwk.base.conf.elements.ContextRuleInterface contextRule) {
 		arrayAppend(getContextRules(), arguments.contextRule);
 	}
 
@@ -118,6 +118,11 @@ component output='false' accessors='true' {
 	}
 
 	public void function addParam(string name, any value) {
+		var params = getParams();
+		params[arguments.name] = arguments.value;
+	}
+
+	public void function setParam(string name, any value) {
 		var params = getParams();
 		params[arguments.name] = arguments.value;
 	}

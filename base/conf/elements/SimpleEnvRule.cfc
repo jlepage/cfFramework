@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component implements='base.conf.elements.EnvRuleInterface' accessors=true output=false {
+component implements='cffwk.base.conf.elements.EnvRuleInterface' accessors=true output=false {
 
 	property type='string' name='hostname';
 	property type='string' name='ip';
 	property type='string' name='name';
 
-	public base.conf.elements.SimpleEnvRule function init(required string name, string hostname = '', string ip = '') {
+	public cffwk.base.conf.elements.SimpleEnvRule function init(required string name, string hostname = '', string ip = '') {
 		setHostname(arguments.hostname);
 		setIp(arguments.ip);
 		setName(arguments.name);

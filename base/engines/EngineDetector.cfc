@@ -18,14 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component accessors=true output=false persistent=false {
 
-	public base.engines.EngineDetector function init() {
+	public cffwk.base.engines.EngineDetector function init() {
 		return this;
 	}
 
-	public base.engines.EngineInterface function getEngine() output=true {
+	public cffwk.base.engines.EngineInterface function getEngine() output=true {
 
 		if (structKeyExists(server, 'lucee')) {
-			var engine = createObject('component', 'base.engines.LuceeEngine').init();
+			var engine = createObject('component', 'cffwk.base.engines.LuceeEngine').init();
 			engine.setName( server.coldfusion.productName );
 			engine.setVersion( server.lucee.version );
 			return engine;
@@ -33,7 +33,7 @@ component accessors=true output=false persistent=false {
 		}
 
 		if (structKeyExists(server, 'railo')) {
-			var engine = createObject('component', 'base.engines.RailoEngine').init();
+			var engine = createObject('component', 'cffwk.base.engines.RailoEngine').init();
 			engine.setName( server.coldfusion.productName );
 			engine.setVersion( server.railo.version );
 			return engine;
@@ -41,7 +41,7 @@ component accessors=true output=false persistent=false {
 		}
 
 		if (structKeyExists(server, 'coldfusion') && findNoCase('coldfusion', server.coldfusion.productName) > 0) {
-			var engine = createObject('component', 'base.engines.ColdfusionEngine').init();
+			var engine = createObject('component', 'cffwk.base.engines.ColdfusionEngine').init();
 			engine.setName( server.coldfusion.productName );
 			engine.setVersion( server.coldfusion.productVersion );
 			return engine;

@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 component output='false' accessors='true' {
 
 	property type='array' name='routes';
-	property type='base.conf.Config' name='config';
-	property type='base.engines.EngineInterface' name='engine';
+	property type='cffwk.base.conf.Config' name='config';
+	property type='cffwk.base.engines.EngineInterface' name='engine';
 	property type='component' name='beanFactory';
 
 	property type='struct' name='cacheRouteIds';
@@ -91,8 +91,8 @@ component output='false' accessors='true' {
 			if (structKeyExists(result, 'controllerClass')) {
 				result.controller = getBeanFactory().getBean(result.controllerClass);
 
-				if (!isInstanceOf(result.controller, 'base.controllers.AbstractController')) {
-					throw('Your controller must be an instance of base.controllers.AbstractController');
+				if (!isInstanceOf(result.controller, 'cffwk.controllers.AbstractController')) {
+					throw('Your controller must be an instance of cffwk.controllers.AbstractController');
 
 				}
 
@@ -111,8 +111,8 @@ component output='false' accessors='true' {
 		result.action = getConfig().getParam('defaultControllerAction');
 		result.controller = getBeanFactory().getBean(result.controllerClass);
 
-		if (!isInstanceOf(result.controller, 'base.controllers.AbstractController')) {
-			throw('Your default controller must be an instance of base.controllers.AbstractController');
+		if (!isInstanceOf(result.controller, 'cffwk.controllers.AbstractController')) {
+			throw('Your default controller must be an instance of cffwk.controllers.AbstractController');
 
 		}
 

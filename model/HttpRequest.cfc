@@ -22,6 +22,10 @@ component output="false" {
 		return this;
 	}
 
+	public numeric function getRequestLife() {
+		return getTickCount() - REQUEST.started;
+	}
+
 	public string function getHostname() {
 		return CGI.SERVER_NAME;
 	}

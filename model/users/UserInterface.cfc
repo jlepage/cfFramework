@@ -16,30 +16,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output='false' accessors='true' {
+interface {
 
-	property type='struct' name='params';
+	public boolean function isValid();
 
+	public base.model.users.ProfilInterface function getProfil();
+	public void function setProfil(required cffwk.model.users.ProfilInterface profil);
 
-	public base.model.RenderArguments function init() {
-		variables.params = structNew();
-		return this;
-	}
+	public void function setLogin(required string login);
+	public string function getLogin();
 
-	public boolean function has(required string varName) output='true' {
-		if (structKeyExists(variables.params, arguments.varName)) {
-			return true;
-		}
+	public void function setEmail(required string email);
+	public string function getEmail();
 
-		return false;
-	}
+	public void function setPassword(required string password);
+	public string function getPassword();
 
-	public any function get(required string varName, any defaultValue = '') {
-		if (structKeyExists(variables.params, arguments.varName)) {
-			return variables.params[arguments.varName];
-		}
-
-		return arguments.defaultValue;
-	}
+	public void function cryptPassword(required string password);
+	public boolean function isPasswordMatch(required string password);
 
 }

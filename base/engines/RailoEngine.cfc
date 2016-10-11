@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component implements='base.engines.EngineInterface' accessors=true output=false {
+component implements='cffwk.base.engines.EngineInterface' accessors=true output=false {
 
 	property type='string' name='name';
 	property type='string' name='version';

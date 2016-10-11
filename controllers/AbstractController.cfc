@@ -18,25 +18,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output='false' accessors='true' {
 
-	property type='base.conf.Config' name='config';
+	property type='cffwk.base.conf.Config' name='config';
 
-	property type='base.conf.Router' name='router';
-	property type='base.model.users.UserGateway' name='userGateway';
+	property type='cffwk.base.Router' name='router';
+	property type='cffwk.model.users.UserGateway' name='userGateway';
 
 	property type='component' name='render';
 	property type='component' name='beanFactory';
 
-	public any function init() {
+	public cffwk.controllers.AbstractController function init() {
 		return this;
+	}
+
+	public cffwk.model.HttpRequest function getRequest() {
+		return getBeanFactory().getBean('HttpRequest');
+	}
+
+	public string function getSession() {
+		return getBeanFactory().getBean('Session');
 	}
 
 	public string function getContext() {
 		var req = getRequest();
 		return getConfig().getContext(req);
-	}
-
-	public string function getURL(required string routeId, struct args = {}) {
-		return getRouter().getFormatedURL(arguments.routeId, arguments.args);
 	}
 
 	public boolean function signInUser(required string login, required string password) {
@@ -66,12 +70,12 @@ component output='false' accessors='true' {
 		return false;
 	}
 
-	public base.model.HttpRequest function getRequest() {
-		return getBeanFactory().getBean('HttpRequest');
-	}
-
 	public any function get(required string serviceName) {
 		return getBeanFactory().getBean(arguments.serviceName);
+	}
+
+	public string function getURL(required string routeId, struct args = {}) {
+		return getRouter().getFormatedURL(arguments.routeId, arguments.args);
 	}
 
 	public void function redirect(required string path, boolean hard = false) {

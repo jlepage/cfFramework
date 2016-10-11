@@ -19,12 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 component output='false' accessors='true' {
 	pageencoding 'utf-8';
 
-	property type='base.conf.Config' name='config';
-	property type='base.conf.Router' name='router';
-	property type='base.model.users.UserGateway' name='userGateway';
+	property type='cffwk.base.conf.Config' name='config';
+	property type='cffwk.base.Router' name='router';
+	property type='cffwk.model.users.UserGateway' name='userGateway';
 	property type='component' name='BeanFactory';
 
-	public base.Render function init() {
+	public cffwk.base.Render function init() {
 		return this;
 	}
 
@@ -36,7 +36,7 @@ component output='false' accessors='true' {
 		arguments.fctArgs = _populateArgs(arguments.fctArgs);
 		structAppend(local, arguments.fctArgs);
 
-		var args = getBeanFactory().getBean('RenderArguments');
+		var args = variables.beanFactory.getBean('RenderArguments');
 		args.setParams(arguments.fctArgs);
 
 		savecontent variable='response' {
