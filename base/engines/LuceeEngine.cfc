@@ -42,8 +42,8 @@ component implements='cffwk.base.engines.EngineInterface' accessors=true output=
 	}
 
 	public void function hardRedirect(required string location) {
-		getPageContext().getResponse().getResponse().setHeader('Location', arguments.location);
-		getPageContext().getResponse().getResponse().setStatus(302);
+		header statuscode = '302' statustext = 'Moved Temporarily';
+		header name = 'Location', value = arguments.location ;
 	}
 
 }
