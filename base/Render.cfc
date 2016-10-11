@@ -150,11 +150,11 @@ component output='false' accessors='true' {
 		return variables.config.getContext(getHttpRequest());
 	}
 
-	public string function getHttpRequest() {
+	public cffwk.model.HttpRequest function getHttpRequest() {
 		return variables.BeanFactory.getBean('HttpRequest');
 	}
 
-	public string function getSession() {
+	public cffwk.model.Session function getSession() {
 		return variables.BeanFactory.getBean('Session');
 	}
 
