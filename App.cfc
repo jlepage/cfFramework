@@ -221,8 +221,8 @@ component accessors='true' {
 	}
 
 	public void function onSessionStart() {
+		getBeanFactory().getBean('Session');
 		session.user = false;
-		session.started = getTickCount();
 	}
 
 	public void function onRequestStart(string targetPage) {

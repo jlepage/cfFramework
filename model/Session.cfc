@@ -18,14 +18,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component output='false' {
 
+	property type='string' name='session_uuid';
+	property type='string' name='session_name';
 	property type='cffwk.model.users.UserGateway' name='UserGateway';
 
 	public cffwk.model.Session function init() {
+		var prefix = '_cffwf_';
+		var uuidKey = prefix & 'uuid';
+
+		if (!structKeyExists(SESSION, uuidKey)) {
+			variables.session_uuid = createUUID();
+			variables.session_name = prefix & variables.session_uuid;
+
+			SESSION[uuidKey] = variables.session_uuid;
+			SESSION[variables.session_name] = structNew();
+			SESSION[variables.session_name]['started'] = getTickCount();
+
+		}
+
 		return this;
 	}
 
 	public any function getSessionLife() {
-		return getTickCount() - SESSION.started;
+		return getTickCount() - get('started', getTickCount());
 	}
 
 	public any function getUser() {
@@ -33,11 +48,11 @@ component output='false' {
 	}
 
 	public any function set(required string name, required any value) {
-		SESSION[arguments.name] = arguments.value;
+		SESSION[variables.session_name][arguments.name] = arguments.value;
 	}
 
 	public any function has(required string name) {
-		if (structKeyExists(SESSION, arguments.name)) {
+		if (structKeyExists(SESSION[variables.session_name], arguments.name)) {
 			return true;
 		}
 
@@ -45,8 +60,8 @@ component output='false' {
 	}
 
 	public any function get(required string name, any defaultValue = '') {
-		if (structKeyExists(SESSION, arguments.name)) {
-			return SESSION[arguments.name];
+		if (structKeyExists(SESSION[variables.session_name], arguments.name)) {
+			return SESSION[variables.session_name][arguments.name];
 		}
 
 		return arguments.defaultValue;

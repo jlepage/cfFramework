@@ -79,6 +79,26 @@ component output='false' {
 	}
 
 
+	public boolean function hasNext(required string level) {
+		if (structKeyExists(variables.messages, arguments.level) && arrayLen(variables.messages[arguments.level]) > 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+	public string function next(required string level) {
+		if (structKeyExists(variables.messages, arguments.level) && arrayLen(variables.messages[arguments.level]) > 0) {
+			var firstOne = variables.messages[arguments.level][1];
+			arrayDeleteAt(variables.messages[arguments.level], 1);
+			return firstOne;
+		}
+
+		return '';
+	}
+
+
 	public array function get(required string level) {
 		if (!structKeyExists(variables.messages, arguments.level)) {
 			return arrayNew(1);
