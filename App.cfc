@@ -221,7 +221,9 @@ component accessors='true' {
 	}
 
 	public void function onSessionStart() {
-		getBeanFactory().getBean('Session');
+		if (structKeyExists(Application, '_cfw') && structKeyExists(Application._cfw, 'beanFactory')) {
+			getBeanFactory().getBean('Session');
+		}
 		session.user = false;
 	}
 
