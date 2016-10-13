@@ -119,7 +119,7 @@ component accessors='true' {
 		addParam('beanFactory', 'cffwk.ext.ioc');
 		addParam('iocPath', '/cffwk/base,/cffwk/controllers,/cffwk/model,/base,/controllers,/helpers,/model,/services');
 		addParam('iocSingletonRegex', '(Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$');
-		addParam('iocExcludeArray', ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc', 'RailoEngine.cfc']);
+		addParam('iocExcludeArray', ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc', 'RailoEngine.cfc', 'LuceeEngine.cfc']);
 
 		addParamByEnv('debug', 'debug', true);
 
