@@ -45,6 +45,11 @@ component output='false' accessors='true' {
 		return this;
 	}
 
+	public string function getFileSeparator() {
+		return createObject('java', 'java.io.File').separator;
+	}
+
+
 	public void function loadParams() {
 		_loadEnv();
 		_loadParams();
