@@ -21,7 +21,12 @@ component output='false' accessors='true' {
 
 	property type='cffwk.base.conf.Config' name='config';
 	property type='cffwk.base.Router' name='router';
+
 	property type='cffwk.model.users.UserGateway' name='userGateway';
+
+	property type='cffwk.model.scopes.Session' name='session';
+	property type='cffwk.model.scopes.HttpRequest' name='httpRequest';
+
 	property type='component' name='BeanFactory';
 
 	public cffwk.base.Render function init() {
@@ -70,17 +75,12 @@ component output='false' accessors='true' {
 	}
 
 	public any function getDebugPath() {
-		return request.path;
+		return getHttpRequest().get('path');
 	}
 
 	public void function debugPath(required string viewFile) {
 		if (variables.config.getParam('debug')) {
-			if (!structKeyExists(request, 'path')) {
-				request.path = arrayNew(1);
-
-			}
-
-			arrayAppend(request.path, arguments.viewFile);
+			getHttpRequest().append('path', arguments.viewFile);
 		}
 	}
 
@@ -128,13 +128,13 @@ component output='false' accessors='true' {
 
 	public void function render(required string template, struct args = {}, string layout = 'default.cfm') {
 		if (getConfig().getParam('debug')) {
-			request.renderStart = getTickCount();
+			getChrono().start('Render');
 		}
 
 		writeOutput( view(arguments.template, arguments.args, arguments.layout) );
 
 		if (getConfig().getParam('debug')) {
-			request.renderTime = getTickCount() - request.renderStart;
+			getChrono().end('Render');
 		}
 	}
 
@@ -150,12 +150,16 @@ component output='false' accessors='true' {
 		return variables.config.getContext(getHttpRequest());
 	}
 
-	public cffwk.model.HttpRequest function getHttpRequest() {
+	public cffwk.model.scopes.HttpRequest function getHttpRequest() {
 		return variables.BeanFactory.getBean('HttpRequest');
 	}
 
-	public cffwk.model.Session function getSession() {
+	public cffwk.model.scopes.Session function getSession() {
 		return variables.BeanFactory.getBean('Session');
+	}
+
+	public cffwk.model.Chrono function getChrono() {
+		return variables.BeanFactory.getBean('Chrono');
 	}
 
 	public string function getUrl(required string routeId, struct args = {}) {

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 interface {
 
-	public boolean function isApplicable(required cffwk.model.HttpRequest httpRequest);
+	public boolean function isApplicable(required cffwk.model.scopes.HttpRequest httpRequest);
 	public string function getContextName();
 
 }

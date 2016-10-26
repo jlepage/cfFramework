@@ -30,17 +30,15 @@ component output='false' accessors='true' {
 	property type='array' name='contextRules';
 
 	public cffwk.base.conf.Config function init() {
+		variables.env = '_default_';
+		variables.envRules = arrayNew(1);
+		variables.contextRules = arrayNew(1);
+		variables.params = structNew();
+		variables.paramsByIp = structNew();
+		variables.paramsByEnv = structNew();
+		variables.paramsByHostname = structNew();
 
-		setEnv('_default_');
-		setEnvRules(arrayNew(1));
-		setContextRules(arrayNew(1));
-
-		setParams(structNew());
-		setParamsByIp(structNew());
-		setParamsByEnv(structNew());
-		setParamsByHostname(structNew());
-
-		setIp( createObject('java', 'java.net.InetAddress').getByName(CGI.SERVER_NAME).getHostAddress() );
+		variables.ip = createObject('java', 'java.net.InetAddress').getByName(CGI.SERVER_NAME).getHostAddress();
 
 		return this;
 	}
@@ -56,22 +54,19 @@ component output='false' accessors='true' {
 	}
 
 	private void function _loadEnv() {
-		var envRules = getEnvRules();
 		var ip = getIp();
 
-		for (var i = 1; i <= arrayLen(envRules); i++) {
-			if (envRules[i].isApplicable(hostname = CGI.SERVER_NAME, ip = ip)) {
-				setEnv(envRules[i].getEnvName());
+		for (var i = 1; i <= arrayLen(variables.envRules); i++) {
+			if (variables.envRules[i].isApplicable(hostname = CGI.SERVER_NAME, ip = ip)) {
+				variables.env = variables.envRules[i].getEnvName();
 			}
 		}
 	}
 
-	public string function getContext(required cffwk.model.HttpRequest httpRequest) {
-		var contextRules = getContextRules();
-
-		for (var i = 1; i <= arrayLen(contextRules); i++) {
-			if (contextRules[i].isApplicable(arguments.httpRequest)) {
-				return contextRules[i].getContextName();
+	public string function getContext(required cffwk.model.scopes.HttpRequest httpRequest) {
+		for (var i = 1; i <= arrayLen(variables.contextRules); i++) {
+			if (variables.contextRules[i].isApplicable(arguments.httpRequest)) {
+				return variables.contextRules[i].getContextName();
 			}
 		}
 
@@ -79,84 +74,74 @@ component output='false' accessors='true' {
 	}
 
 	private void function _loadParams() {
-
-
-		var paramByIp = getParamsByIp();
-		var ips = structKeyArray(paramByIp);
+		var ips = structKeyArray(variables.paramsByIp);
 		for (var i = 1; i <= arrayLen(ips); i++) {
-			if (ips[i] == getIp()) {
-				structAppend(getParams(), paramByIp[ips[i]]);
+			if (ips[i] == variables.ip) {
+				structAppend(variables.params, variables.paramsByIp[ips[i]]);
 			}
 		}
 
-		var paramsByEnv = getParamsByEnv();
-		var envs = structKeyArray(paramsByEnv);
+		var envs = structKeyArray(variables.paramsByEnv);
 		for (i = 1; i <= arrayLen(envs); i++) {
-			if (envs[i] == getEnv()) {
-				structAppend(getParams(), paramsByEnv[envs[i]]);
+			if (envs[i] == variables.env) {
+				structAppend(variables.params, variables.paramsByEnv[envs[i]]);
 			}
 		}
 
-		var paramsByHost = getParamsByHostname();
-		var hosts = structKeyArray(paramsByHost);
+		var hosts = structKeyArray(variables.paramsByHostname);
 		for (i = 1; i <= arrayLen(hosts); i++) {
 			if (hosts[i] == CGI.SERVER_NAME) {
-				structAppend(getParams(), paramsByHost[hosts[i]]);
+				structAppend(variables.params, variables.paramsByHostname[hosts[i]]);
 			}
 		}
-
 	}
 
 	public void function addEnvRule(required cffwk.base.conf.elements.EnvRuleInterface envRule) {
-		arrayAppend(getEnvRules(), arguments.envRule);
+		arrayAppend(variables.envRules, arguments.envRule);
 	}
 
 	public void function addContextRule(required cffwk.base.conf.elements.ContextRuleInterface contextRule) {
-		arrayAppend(getContextRules(), arguments.contextRule);
+		arrayAppend(variables.contextRules, arguments.contextRule);
 	}
 
-	public any function getParam(string name) {
-		if (structKeyExists(getParams(), arguments.name)) {
-			return getParams()[arguments.name];
+	public any function getParam(required string name) {
+		if (structKeyExists(variables.params, arguments.name)) {
+			return variables.params[arguments.name];
 		}
+
 		return false;
 	}
 
 	public void function addParam(string name, any value) {
-		var params = getParams();
-		params[arguments.name] = arguments.value;
+		variables.params[arguments.name] = arguments.value;
 	}
 
 	public void function setParam(string name, any value) {
-		var params = getParams();
-		params[arguments.name] = arguments.value;
+		variables.params[arguments.name] = arguments.value;
 	}
 
-	public void function addParamByIp(string ip, string name, any value) {
-		var paramsByIp = getParamsByIp();
-		if (!structKeyExists(paramsByIp, arguments.ip)) {
-			paramsByIp[arguments.ip] = structNew();
+	public void function addParamByIp(required string ip, required string name, required any value) {
+		if (!structKeyExists(variables.paramsByIp, arguments.ip)) {
+			variables.paramsByIp[arguments.ip] = structNew();
 		}
 
-		paramsByIp[arguments.ip][arguments.name] = arguments.value;
+		variables.paramsByIp[arguments.ip][arguments.name] = arguments.value;
 	}
 
-	public void function addParamByEnv(string env, string name, any value) {
-		var paramsByEnv = getParamsByEnv();
-		if (!structKeyExists(paramsByEnv, arguments.env)) {
-			paramsByEnv[arguments.env] = structNew();
+	public void function addParamByEnv(required string env, required string name, required any value) {
+		if (!structKeyExists(variables.paramsByEnv, arguments.env)) {
+			variables.paramsByEnv[arguments.env] = structNew();
 		}
 
-		paramsByEnv[arguments.env][arguments.name] = arguments.value;
+		variables.paramsByEnv[arguments.env][arguments.name] = arguments.value;
 	}
 
-	public void function addParamByHostname(string host, string name, any value) {
-		var paramsByHost = getParamsByHostname();
-		if (!structKeyExists(paramsByHost, arguments.host)) {
-			paramsByHost[arguments.host] = structNew();
+	public void function addParamByHostname(required string host, required string name, required any value) {
+		if (!structKeyExists(variables.paramsByHost, arguments.host)) {
+			variables.paramsByHost[arguments.host] = structNew();
 		}
 
-		paramsByHost[arguments.host][arguments.name] = arguments.value;
+		variables.paramsByHost[arguments.host][arguments.name] = arguments.value;
 	}
 
 }

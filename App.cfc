@@ -72,7 +72,9 @@ component accessors='true' {
 	}
 
 	public component function getBeanFactory() {
-		return Application._cfw.beanFactory;
+		if (structKeyExists(Application, '_cfw') && structKeyExists(Application._cfw, 'beanFactory')) {
+			return Application._cfw.beanFactory;
+		}
 	}
 
 	public component function newConfigObject() {
@@ -84,9 +86,16 @@ component accessors='true' {
 		return detector.getEngine();
 	}
 
+	public cffwk.model.Chrono function getChrono() {
+		return Application._cfw.chrono;
+	}
+
 	private void function _restartConfig() {
 
 		Application._cfw = structNew();
+		Application._cfw.chrono = new cffwk.model.Chrono();
+		Application._cfw.chrono.start('Config');
+
 		var cfg = newConfigObject();
 
 		if (!isInstanceOf(cfg, 'cffwk.base.conf.Config')) {
@@ -123,12 +132,21 @@ component accessors='true' {
 
 		addParamByEnv('debug', 'debug', true);
 
+		Application._cfw.chrono.start('Params init');
 		setParams();
+		Application._cfw.chrono.end('Params init');
+
+		Application._cfw.chrono.start('Params load');
 		getConfig().loadParams();
+		Application._cfw.chrono.end('Params load');
 
+		Application._cfw.chrono.start('Check views');
 		_checkViewFolders();
+		Application._cfw.chrono.end('Check views');
 
+		Application._cfw.chrono.start('Detect engine');
 		setEngine(detectEngine());
+		Application._cfw.chrono.end('Detect engine');
 
 		if (!isNull(getConfig().getParam('datasource'))) {
 			this.datasource = getConfig().getParam('datasource');
@@ -146,8 +164,12 @@ component accessors='true' {
 
 		postConfigProcess();
 		getBeanFactory().getBean('Router');
-		setRoutes();
 
+		Application._cfw.chrono.start('Routes load');
+		setRoutes();
+		Application._cfw.chrono.end('Routes load');
+
+		Application._cfw.chrono.end('Config');
 	}
 
 	private string function _detectCorrectPath(required string folder) {
@@ -180,6 +202,7 @@ component accessors='true' {
 
 	private void function _configBeanFactory() {
 
+		getChrono().start('BeanFactory Init');
 		if (getConfig().getParam('beanFactory') == 'cffwk.ext.ioc') {
 
 			var path = getConfig().getParam('iocPath');
@@ -190,6 +213,7 @@ component accessors='true' {
 
 			beanFactory.addBean('config', getConfig());
 			beanFactory.addBean('engine', getEngine());
+			beanFactory.addBean('chrono', getChrono());
 
 			if (!isNull(getConfig().getParam('datasource'))) {
 				beanFactory.addBean('datasource', getConfig().getParam('datasource'));
@@ -203,6 +227,7 @@ component accessors='true' {
 			setBeanFactory(beanFactory);
 		}
 
+		getChrono().end('BeanFactory Init');
 	}
 
 	public void function preIOCLoadProcess() {}
@@ -221,17 +246,19 @@ component accessors='true' {
 	}
 
 	public void function onSessionStart() {
-		if (structKeyExists(Application, '_cfw') && structKeyExists(Application._cfw, 'beanFactory')) {
-			getBeanFactory().getBean('Session');
-		}
-		session.user = false;
+		getBeanFactory().getBean('Session').reset();
 	}
 
 	public void function onRequestStart(string targetPage) {
-		request.started = getTickCount();
+		Application._cfw.chrono.reset();
+
 		if (structKeyExists(URL, 'reload')) {
 			_restartConfig();
+
 		}
+
+		getBeanFactory().getBean('HttpRequest');
+		Application._cfw.chrono.start('Request');
 	}
 
 	public void function onRequest(string targetPage) output=true {
@@ -239,13 +266,14 @@ component accessors='true' {
 	}
 
 	public void function onRequestEnd() {
-		if (getConfig().getParam('debug') && structKeyExists(request, 'renderTime')) {
-			var ctrlTime = request.controllerTime - request.renderTime;
-			writeOutput('<br/>Exec Time: ' & (getTickCount() - request.started) & 'ms');
-			writeOutPut(' - Routing time: ' & request.routerTime & 'ms');
-			writeOutPut(' - Controller time: ' & ctrlTime & 'ms');
-			writeOutPut(' - Render time: ' & request.renderTime & 'ms');
+		Application._cfw.chrono.end('Request');
+
+		if (getConfig().getParam('debug')) {
+			getChrono().printResults();
+
 		}
+
+		getBeanFactory().getBean('HttpRequest').reset();
 
 		if (structKeyExists(URL, 'restart') && getConfig().getParam('debug')) {
 			applicationStop();
@@ -253,8 +281,7 @@ component accessors='true' {
 	}
 
 	public void function onSessionStop() {
-		structDelete(session, 'user');
-		structDelete(session, 'started');
+		getBeanFactory().getBean('Session').reset();
 	}
 
 	/***

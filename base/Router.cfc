@@ -27,7 +27,7 @@ component output='false' accessors='true' {
 
 	public function init() {
 		variables.cacheRouteIds = structNew();
-		setRoutes(arrayNew(1));
+		variables.routes = arrayNew(1);
 		return this;
 	}
 
@@ -44,24 +44,24 @@ component output='false' accessors='true' {
 
 	private struct function _getRuleToProcess(required string path) output='true' {
 
-		if (getConfig().getParam('debug')) {
-			request.routerStart = getTickCount();
-			request.routeDebug = arrayNew(1);
+		if (variables.config.getParam('debug')) {
+			variables.beanFactory.getBean('Chrono').start('Router');
 
 		}
 
-		var routes = getRoutes();
+		var routes = variables.routes;
 		var result = {'path' = arguments.path, 'hasParameters' = false, 'parameters' = structNew()};
+		var curEnv = variables.config.getEnv();
 
-		for (var i = 1; i <= arrayLen(routes); i++) {
+		for (var i = 1; i <= arrayLen(variables.routes); i++) {
 
-			var interpretedRoute = routes[i].getRegexRoute();
+			var interpretedRoute = variables.routes[i].getRegexRoute();
 
-			if (arrayLen(reMatch(interpretedRoute, arguments.path)) && routes[i].isEnvMatch(getConfig().getEnv()) ) {
-				result = routes[i].completeResults(result);
+			if (arrayLen(reMatch(interpretedRoute, arguments.path)) && variables.routes[i].isEnvMatch(curEnv) ) {
+				result = variables.routes[i].completeResults(result);
 				result.hasParameters = true;
 
-				var varNames = reMatch('\{([a-zA-Z0-9\-]+)\}', routes[i].getRoute());
+				var varNames = reMatch('\{([a-zA-Z0-9\-]+)\}', variables.routes[i].getRoute());
 				var replacementExp = '';
 
 				for (var j = 1; j <= arrayLen(varNames); j++) {
@@ -69,7 +69,7 @@ component output='false' accessors='true' {
 					replacementExp = listAppend(replacementExp, currentName & '=\' & j, '||');
 				}
 
-				var regexMatch = reReplace(routes[i].getRoute(), '\{[^\}]+\}', '(.*)', 'all');
+				var regexMatch = reReplace(variables.routes[i].getRoute(), '\{[^\}]+\}', '(.*)', 'all');
 				var rawParams = listToArray(reReplace(arguments.path, regexMatch, replacementExp), '|');
 
 				for (var k = 1; k <= arrayLen(rawParams); k++) {
@@ -80,25 +80,25 @@ component output='false' accessors='true' {
 
 			}
 
-			if (getConfig().getParam('debug')) {
-				arrayAppend(request.routeDebug, interpretedRoute);
+			if (variables.config.getParam('debug')) {
+				variables.beanFactory.getBean('HttpRequest').append('routeDebug', interpretedRoute);
 			}
 
-			if ( routes[i].getRoute() == arguments.path && routes[i].isEnvMatch(getConfig().getEnv()) ) {
+			if (variables.routes[i].getRoute() == arguments.path && variables.routes[i].isEnvMatch(curEnv) ) {
 				result = routes[i].completeResults(result);
 			}
 
 			if (structKeyExists(result, 'controllerClass')) {
-				result.controller = getBeanFactory().getBean(result.controllerClass);
+				result.controller = variables.beanFactory.getBean(result.controllerClass);
 
 				if (!isInstanceOf(result.controller, 'cffwk.controllers.AbstractController')) {
 					throw('Your controller must be an instance of cffwk.controllers.AbstractController');
 
 				}
 
-				if (getConfig().getParam('debug')) {
-					request.route = interpretedRoute;
-					request.routerTime = getTickCount() - request.routerStart;
+				if (variables.config.getParam('debug')) {
+					variables.beanFactory.getBean('HttpRequest').set('route', interpretedRoute);
+					variables.beanFactory.getBean('Chrono').end('Router');
 
 				}
 
@@ -107,18 +107,18 @@ component output='false' accessors='true' {
 
 		}
 
-		result.controllerClass = getConfig().getParam('defaultController');
-		result.action = getConfig().getParam('defaultControllerAction');
-		result.controller = getBeanFactory().getBean(result.controllerClass);
+		result.controllerClass = variables.config.getParam('defaultController');
+		result.action = variables.config.getParam('defaultControllerAction');
+		result.controller = variables.beanFactory.getBean(result.controllerClass);
 
 		if (!isInstanceOf(result.controller, 'cffwk.controllers.AbstractController')) {
 			throw('Your default controller must be an instance of cffwk.controllers.AbstractController');
 
 		}
 
-		if (getConfig().getParam('debug')) {
-			request.routerTime = getTickCount() - request.routerStart;
-			request.route = 'default';
+		if (variables.config.getParam('debug')) {
+			variables.beanFactory.getBean('HttpRequest').set('route', 'default');
+			variables.beanFactory.getBean('Chrono').end('Router');
 
 		}
 
@@ -131,18 +131,16 @@ component output='false' accessors='true' {
 			return variables.cacheRouteIds[arguments.routeId];
 		}
 
-		var routes = getRoutes();
-
-		for (var i = 1; i <= arrayLen(routes); i++) {
-			if (lCase(routes[i].getId()) == lCase(arguments.routeId)) {
-				return routes[i];
+		for (var i = 1; i <= arrayLen(variables.routes); i++) {
+			if (lCase(variables.routes[i].getId()) == lCase(arguments.routeId)) {
+				return variables.routes[i];
 			}
 		}
 	}
 
 	public string function getFormatedUrl(required string routeId, struct args = {}) {
 		var route = getRouteByID(arguments.routeId);
-		var skip = getConfig().getParam('skipURLIndex');
+		var skip = variables.config.getParam('skipURLIndex');
 
 		if (!isNull(route)) {
 			var urlRoute = route.getRoute();
@@ -172,44 +170,42 @@ component output='false' accessors='true' {
 	}
 
 	public void function addRoute(string id, string route, string controller, string action = 'default', string env = '*', string format = 'text/html') {
-		var cur = getBeanFactory().getBean('Route').load(arguments);
-		variables.cacheRouteIds[arguments.id] = cur;
-		arrayAppend(getRoutes(), cur);
+		var curRoute = variables.beanFactory.getBean('Route').load(arguments);
+		variables.cacheRouteIds[arguments.id] = curRoute;
+		arrayAppend(variables.routes, curRoute);
 	}
 
-	public void function processRoute(string pathToProcess = '') {
+	public void function processRoute(required string pathToProcess = '') {
 		if (arguments.pathToProcess == '') {
 			arguments.pathToProcess = getPath();
 		}
 
-		if (getConfig().getParam('debug')) {
-			request.controllerStart = getTickCount();
+		if (variables.config.getParam('debug')) {
+			variables.beanFactory.getBean('Chrono').start('Controller');
 		}
 
 		var process = _getRuleToProcess(arguments.pathToProcess);
-		var args = process.parameters;
-		var call = 'process.controller.#process.action#(argumentCollection = args)';
-		evaluate(call);
+		variables.engine.invoke(process.controller, process.action, process.parameters);
 
-		if (getConfig().getParam('debug')) {
-			request.controllerTime = getTickCount() - request.controllerStart;
+		if (variables.config.getParam('debug')) {
+			variables.beanFactory.getBean('Chrono').end('Controller');
 		}
 	}
 
 	public void function redirectTo(required string path, boolean hard = false) {
 
 		if (arguments.hard) {
-			getEngine().hardRedirect(arguments.path);
+			variables.engine.hardRedirect(arguments.path);
 			return;
 		}
 
-		if (!structKeyExists(request, 'redirects')) {
-			request.redirects = 0;
+		if (!variables.beanFactory.getBean('HttpRequest').has('redirects')) {
+			variables.beanFactory.getBean('HttpRequest').set('redirects', 0);
 		}
 
-		request.redirects++;
+		variables.beanFactory.getBean('HttpRequest').incr('redirects');
 
-		if (request.redirects > 10) {
+		if (variables.beanFactory.getBean('HttpRequest').get('redirects') > 10) {
 			throw({message = 'Too much redirections, maybe a infinite loop over here !'});
 		}
 

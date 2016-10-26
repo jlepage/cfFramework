@@ -30,17 +30,16 @@ component output='false' accessors='true' {
 		return this;
 	}
 
-	public cffwk.model.HttpRequest function getRequest() {
+	public cffwk.model.scopes.HttpRequest function getRequest() {
 		return getBeanFactory().getBean('HttpRequest');
 	}
 
-	public string function getSession() {
+	public cffwk.model.scopes.Session function getSession() {
 		return getBeanFactory().getBean('Session');
 	}
 
 	public string function getContext() {
-		var req = getRequest();
-		return getConfig().getContext(req);
+		return getConfig().getContext( getRequest() );
 	}
 
 	public boolean function signInUser(required string login, required string password) {

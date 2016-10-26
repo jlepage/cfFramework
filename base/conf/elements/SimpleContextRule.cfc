@@ -23,17 +23,17 @@ component implements='cffwk.base.conf.elements.ContextRuleInterface' accessors=t
 	property type='string' name='name';
 
 	public cffwk.base.conf.elements.SimpleContextRule function init(required string name, string hostname = '', string uri = '') {
-		setHostname(arguments.hostname);
-		setUri(arguments.uri);
-		setName(arguments.name);
+		variables.hostname = arguments.hostname;
+		variables.uri = arguments.uri;
+		variables.name = arguments.name;
 		return this;
 	}
 
 	public string function getContextName() {
-		return getName();
+		return variables.name;
 	}
 
-	public boolean function isApplicable(required cffwk.model.HttpRequest httpRequest) {
+	public boolean function isApplicable(required cffwk.model.scopes.HttpRequest httpRequest) {
 
 		if (variables.hostname != '' && arguments.httpRequest.getHostname() == variables.hostname) {
 			return true;

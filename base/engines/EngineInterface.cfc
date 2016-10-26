@@ -26,4 +26,6 @@ interface {
 
 	public void function hardRedirect(required string location);
 
+	public void function invoke(required component instance, required string fctName, required any params);
+
 }

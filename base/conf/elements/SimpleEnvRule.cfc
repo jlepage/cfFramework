@@ -23,14 +23,14 @@ component implements='cffwk.base.conf.elements.EnvRuleInterface' accessors=true 
 	property type='string' name='name';
 
 	public cffwk.base.conf.elements.SimpleEnvRule function init(required string name, string hostname = '', string ip = '') {
-		setHostname(arguments.hostname);
-		setIp(arguments.ip);
-		setName(arguments.name);
+		variables.hostname = arguments.hostname;
+		variables.ip = arguments.ip;
+		variables.name = arguments.name;
 		return this;
 	}
 
 	public string function getEnvName() {
-		return getName();
+		return variables.name;
 	}
 
 	public boolean function isApplicable(string hostname = '', string ip = '') {

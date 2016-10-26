@@ -46,4 +46,8 @@ component implements='cffwk.base.engines.EngineInterface' accessors=true output=
 		header name = 'Location', value = arguments.location ;
 	}
 
+	public void function invoke(required component instance, required string fctName, required any params) {
+		invoke(arguments.instance, arguments.fctName, arguments.params);
+	}
+
 }

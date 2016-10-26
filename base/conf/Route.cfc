@@ -27,6 +27,7 @@ component accessors='true' output='false' persistent='false' {
 
 
 	public function init() {
+		variables.env = '*';
 		return this;
 	}
 
@@ -34,44 +35,44 @@ component accessors='true' output='false' persistent='false' {
 	public function load(required struct args) {
 
 		if (structKeyExists(arguments.args, 'id')) {
-			setId(arguments.args['id']);
+			variables.id = arguments.args['id'];
 		}
 
 		if (structKeyExists(arguments.args, 'controller')) {
-			setController(arguments.args['controller']);
+			variables.controller = arguments.args['controller'];
 		}
 
 		if (structKeyExists(arguments.args, 'route')) {
-			setRoute(arguments.args['route']);
+			variables.route = arguments.args['route'];
 		}
 
 		if (structKeyExists(arguments.args, 'action')) {
-			setAction(arguments.args['action']);
+			variables.action = arguments.args['action'];
 		}
 
 		if (structKeyExists(arguments.args, 'env')) {
-			setEnv(arguments.args['env']);
+			variables.env = arguments.args['env'];
 		}
 
 		if (structKeyExists(arguments.args, 'format')) {
-			setFormat(arguments.args['format']);
+			variables.format = arguments.args['format'];
 		}
 
 		return this;
 	}
 
 	public string function getRegexRoute() {
-		return '^' & reReplace( getRoute(), '\{[^\}]+\}', '([^\/]+)', 'all') & '$';
+		return '^' & reReplace(variables.route, '\{[^\}]+\}', '([^\/]+)', 'all') & '$';
 	}
 
 	public struct function completeResults(required struct results) {
-		arguments.results.controllerClass = getController();
-		arguments.results.action = getAction();
+		arguments.results.controllerClass = variables.controller;
+		arguments.results.action = variables.action;
 		return results;
 	}
 
 	public boolean function isEnvMatch(required string env) {
-		if (getEnv() == arguments.env || getEnv() == '*') {
+		if (variables.env == arguments.env || variables.env == '*') {
 			return true;
 		}
 

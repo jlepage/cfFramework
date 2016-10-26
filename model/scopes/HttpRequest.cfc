@@ -16,14 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output='false' {
+component extends='cffwk.model.scopes.AbstractScope' output='false' {
 
-	public any function init() {
+	public cffwk.model.scopes.HttpRequest function init() {
+		super.init(REQUEST);
 		return this;
 	}
 
 	public numeric function getRequestLife() {
-		return getTickCount() - REQUEST.started;
+		return super.getScopeLife();
 	}
 
 	public string function getHostname() {
