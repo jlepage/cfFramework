@@ -63,9 +63,9 @@ component output='false' accessors='true' {
 		}
 	}
 
-	public string function getContext(required cffwk.model.scopes.HttpRequest httpRequest) {
+	public string function getContext(required cffwk.base.scopes.RequestScope requestScope) {
 		for (var i = 1; i <= arrayLen(variables.contextRules); i++) {
-			if (variables.contextRules[i].isApplicable(arguments.httpRequest)) {
+			if (variables.contextRules[i].isApplicable(arguments.requestScope)) {
 				return variables.contextRules[i].getContextName();
 			}
 		}

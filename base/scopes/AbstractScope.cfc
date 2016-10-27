@@ -22,7 +22,7 @@ component output='false' {
 	property type='string' name='scope_uuid';
 	property type='string' name='scope_name';
 
-	public cffwk.model.scopes.AbstractScope function init(required struct scope) {
+	public cffwk.base.scopes.AbstractScope function init(required struct scope) {
 		variables.scope = arguments.scope;
 		_createScope();
 		return this;
@@ -74,6 +74,15 @@ component output='false' {
 		}
 
 		variables.scope[variables.scope_name][arguments.name] += arguments.increment;
+	}
+
+	public any function decr(required string name, numeric increment = 1) {
+		if (!has(arguments.name)) {
+			set(arguments.name, 0);
+
+		}
+
+		variables.scope[variables.scope_name][arguments.name] -= arguments.increment;
 	}
 
 	public any function has(required string name) {

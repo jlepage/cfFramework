@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component extends='cffwk.model.scopes.AbstractScope' output='false' {
+component extends='cffwk.base.scopes.AbstractScope' output='false' {
 
-	public cffwk.model.scopes.HttpRequest function init() {
+	public cffwk.base.scopes.RequestScope function init() {
 		super.init(REQUEST);
 		return this;
 	}

@@ -16,30 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component output='false' accessors='true' {
+component extends='cffwk.base.scopes.AbstractScope' output='false' accessors='true' {
 
 	property type='struct' name='params';
 
-
-	public cffwk.model.RenderArguments function init() {
+	public cffwk.base.scopes.RenderScope function init() {
 		variables.params = structNew();
+		super.init(variables.params);
 		return this;
-	}
-
-	public boolean function has(required string varName) output='true' {
-		if (structKeyExists(variables.params, arguments.varName)) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public any function get(required string varName, any defaultValue = '') {
-		if (structKeyExists(variables.params, arguments.varName)) {
-			return variables.params[arguments.varName];
-		}
-
-		return arguments.defaultValue;
 	}
 
 }

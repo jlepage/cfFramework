@@ -30,12 +30,12 @@ component output='false' accessors='true' {
 		return this;
 	}
 
-	public cffwk.model.scopes.HttpRequest function getRequest() {
-		return getBeanFactory().getBean('HttpRequest');
+	public cffwk.base.scopes.RequestScope function getRequest() {
+		return getBeanFactory().getBean('RequestScope');
 	}
 
-	public cffwk.model.scopes.Session function getSession() {
-		return getBeanFactory().getBean('Session');
+	public cffwk.base.scopes.SessionScope function getSession() {
+		return getBeanFactory().getBean('SessionScope');
 	}
 
 	public string function getContext() {

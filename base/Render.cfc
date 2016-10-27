@@ -24,8 +24,8 @@ component output='false' accessors='true' {
 
 	property type='cffwk.model.users.UserGateway' name='userGateway';
 
-	property type='cffwk.model.scopes.Session' name='session';
-	property type='cffwk.model.scopes.HttpRequest' name='httpRequest';
+	property type='cffwk.base.scopes.SessionScope' name='sessionScope';
+	property type='cffwk.base.scopes.RequestScope' name='requestScope';
 
 	property type='component' name='BeanFactory';
 
@@ -41,7 +41,7 @@ component output='false' accessors='true' {
 		arguments.fctArgs = _populateArgs(arguments.fctArgs);
 		structAppend(local, arguments.fctArgs);
 
-		var args = variables.beanFactory.getBean('RenderArguments');
+		var args = variables.beanFactory.getBean('RenderScope');
 		args.setParams(arguments.fctArgs);
 
 		savecontent variable='response' {
@@ -150,12 +150,12 @@ component output='false' accessors='true' {
 		return variables.config.getContext(getHttpRequest());
 	}
 
-	public cffwk.model.scopes.HttpRequest function getHttpRequest() {
-		return variables.BeanFactory.getBean('HttpRequest');
+	public cffwk.base.scopes.RequestScope function getRequest() {
+		return variables.BeanFactory.getBean('RequestScope');
 	}
 
-	public cffwk.model.scopes.Session function getSession() {
-		return variables.BeanFactory.getBean('Session');
+	public cffwk.base.scopes.SessionScope function getSession() {
+		return variables.BeanFactory.getBean('SessionScope');
 	}
 
 	public cffwk.model.Chrono function getChrono() {

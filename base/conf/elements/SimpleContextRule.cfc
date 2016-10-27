@@ -33,13 +33,13 @@ component implements='cffwk.base.conf.elements.ContextRuleInterface' accessors=t
 		return variables.name;
 	}
 
-	public boolean function isApplicable(required cffwk.model.scopes.HttpRequest httpRequest) {
+	public boolean function isApplicable(required cffwk.base.scopes.RequestScope requestScope) {
 
-		if (variables.hostname != '' && arguments.httpRequest.getHostname() == variables.hostname) {
+		if (variables.hostname != '' && arguments.requestScope.getHostname() == variables.hostname) {
 			return true;
 		}
 
-		if (variables.uri != '' && arguments.httpRequest.getUri() == variables.uri) {
+		if (variables.uri != '' && arguments.requestScope.getUri() == variables.uri) {
 			return true;
 		}
 

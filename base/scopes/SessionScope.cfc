@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component extends='cffwk.model.scopes.AbstractScope' output='false' {
+component extends='cffwk.base.scopes.AbstractScope' output='false' {
 
 	property type='cffwk.model.users.UserGateway' name='UserGateway';
 
-	public cffwk.model.scopes.Session function init() {
+	public cffwk.base.scopes.SessionScope function init() {
 		super.init(SESSION);
 
 		if (!super.has('user')) {

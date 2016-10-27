@@ -22,29 +22,33 @@ component accessors=true output=false persistent=false {
 		return this;
 	}
 
+	private cffwk.base.engines.EngineInterface function _initEngine(required string engineClass, required string name, required string version) {
+		var engine = createObject('component', arguments.engineClass).init();
+		engine.setName( arguments.name );
+		engine.setVersion( arguments.version );
+		return engine;
+	}
+
 	public cffwk.base.engines.EngineInterface function getEngine() output=true {
 
 		if (structKeyExists(server, 'lucee')) {
-			var engine = createObject('component', 'cffwk.base.engines.LuceeEngine').init();
-			engine.setName( server.coldfusion.productName );
-			engine.setVersion( server.lucee.version );
-			return engine;
-
+			return _initEngine('cffwk.base.engines.LuceeEngine', server.coldfusion.productName, server.lucee.version);
 		}
 
 		if (structKeyExists(server, 'railo')) {
-			var engine = createObject('component', 'cffwk.base.engines.RailoEngine').init();
-			engine.setName( server.coldfusion.productName );
-			engine.setVersion( server.railo.version );
-			return engine;
-
+			return _initEngine('cffwk.base.engines.RailoEngine', server.coldfusion.productName, server.railo.version);
 		}
 
 		if (structKeyExists(server, 'coldfusion') && findNoCase('coldfusion', server.coldfusion.productName) > 0) {
-			var engine = createObject('component', 'cffwk.base.engines.ColdfusionEngine').init();
-			engine.setName( server.coldfusion.productName );
-			engine.setVersion( server.coldfusion.productVersion );
-			return engine;
+
+			var cfEngineClass = 'cffwk.base.engines.ColdfusionEngine';
+			var majorVersion = listGetAt(server.coldfusion.productVersion, 1, ',');
+
+			if (majorVersion == 9) {
+				cfEngineClass = 'cffwk.base.engines.Cf9Engine';
+			}
+
+			return _initEngine(cfEngineClass, server.coldfusion.productName, cfEngineClass);
 
 		}
 
