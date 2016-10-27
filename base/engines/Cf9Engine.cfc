@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --->
-<cfcomponent implements="cffwk.base.engines.ColdfusionEngine" accessors="true" output="false">
+<cfcomponent extends="cffwk.base.engines.ColdfusionEngine" accessors="true" output="false">
 
 	<cffunction name="init" access="public" returntype="cffwk.base.engines.Cf9nEngine">
 		<cfset super.init() />
