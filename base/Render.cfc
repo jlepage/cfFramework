@@ -19,13 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 component output='false' accessors='true' {
 	pageencoding 'utf-8';
 
+	property type='cffwk.base.scopes.Applicationscope' name='Application';
 	property type='cffwk.base.conf.Config' name='config';
 	property type='cffwk.base.Router' name='router';
 
 	property type='cffwk.model.users.UserGateway' name='userGateway';
 
-	property type='cffwk.base.scopes.SessionScope' name='sessionScope';
-	property type='cffwk.base.scopes.RequestScope' name='requestScope';
+	property type='cffwk.base.scopes.SessionScope' name='SessionScope';
+	property type='cffwk.base.scopes.RequestScope' name='RequestScope';
 
 	property type='component' name='BeanFactory';
 
@@ -75,13 +76,13 @@ component output='false' accessors='true' {
 	}
 
 	public any function getDebugPath() {
-		return getHttpRequest().get('path');
+		//return variables.requestScope.get('path');
 	}
 
 	public void function debugPath(required string viewFile) {
-		if (variables.config.getParam('debug')) {
-			getHttpRequest().append('path', arguments.viewFile);
-		}
+//		if (variables.config.getParam('debug')) {
+//			variables.requestScope.append('path', arguments.viewFile);
+//		}
 	}
 
 	private struct function _populateArgs(required struct args) {
@@ -147,15 +148,15 @@ component output='false' accessors='true' {
 	}
 
 	public string function getContext() {
-		return variables.config.getContext(getHttpRequest());
+		return variables.config.getContext(variables.RequestScope);
 	}
 
 	public cffwk.base.scopes.RequestScope function getRequest() {
-		return variables.BeanFactory.getBean('RequestScope');
+		return variables.requestScope;
 	}
 
 	public cffwk.base.scopes.SessionScope function getSession() {
-		return variables.BeanFactory.getBean('SessionScope');
+		return variables.sessionScope;
 	}
 
 	public cffwk.model.Chrono function getChrono() {

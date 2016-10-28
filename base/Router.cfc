@@ -81,7 +81,7 @@ component output='false' accessors='true' {
 			}
 
 			if (variables.config.getParam('debug')) {
-				variables.beanFactory.getBean('HttpRequest').append('routeDebug', interpretedRoute);
+				variables.beanFactory.getBean('RequestScope').append('routeDebug', interpretedRoute);
 			}
 
 			if (variables.routes[i].getRoute() == arguments.path && variables.routes[i].isEnvMatch(curEnv) ) {
@@ -97,7 +97,7 @@ component output='false' accessors='true' {
 				}
 
 				if (variables.config.getParam('debug')) {
-					variables.beanFactory.getBean('HttpRequest').set('route', interpretedRoute);
+					variables.beanFactory.getBean('RequestScope').set('route', interpretedRoute);
 					variables.beanFactory.getBean('Chrono').end('Router');
 
 				}
@@ -117,7 +117,7 @@ component output='false' accessors='true' {
 		}
 
 		if (variables.config.getParam('debug')) {
-			variables.beanFactory.getBean('HttpRequest').set('route', 'default');
+			variables.beanFactory.getBean('RequestScope').set('route', 'default');
 			variables.beanFactory.getBean('Chrono').end('Router');
 
 		}
@@ -199,13 +199,13 @@ component output='false' accessors='true' {
 			return;
 		}
 
-		if (!variables.beanFactory.getBean('HttpRequest').has('redirects')) {
-			variables.beanFactory.getBean('HttpRequest').set('redirects', 0);
+		if (!variables.beanFactory.getBean('RequestScope').has('redirects')) {
+			variables.beanFactory.getBean('RequestScope').set('redirects', 0);
 		}
 
-		variables.beanFactory.getBean('HttpRequest').incr('redirects');
+		variables.beanFactory.getBean('RequestScope').incr('redirects');
 
-		if (variables.beanFactory.getBean('HttpRequest').get('redirects') > 10) {
+		if (variables.beanFactory.getBean('RequestScope').get('redirects') > 10) {
 			throw({message = 'Too much redirections, maybe a infinite loop over here !'});
 		}
 

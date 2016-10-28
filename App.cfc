@@ -31,88 +31,96 @@ component accessors='true' {
 		return this;
 	}
 
+	public component function getApp() {
+		if (!structKeyExists(this, 'app')) {
+			this.app = new cffwk.base.scopes.ApplicationScope();
+		}
+
+		return this.app;
+	}
+
 	public void function setVersion(required string vers) {
-		Application._cfw.version = arguments.vers;
+		getApp().set('version', arguments.vers);
 	}
 
 	public string function getVersion() {
-		return Application._cfw.version;
+		return getApp().get('version');
 	}
 
 	public void function setConfig(required cffwk.base.conf.Config conf) {
-		Application._cfw.config = arguments.conf;
+		getApp().set('config', arguments.config);
 	}
 
 	public cffwk.base.conf.Config function getConfig() {
-		return Application._cfw.config;
+		return getApp().get('config');
 	}
 
 	public void function setEngine(required cffwk.base.engines.EngineInterface currentEngine) {
-		Application._cfw.engine = arguments.currentEngine;
+		getApp().set('engine', arguments.currentEngine);
 	}
 
 	public cffwk.base.engines.EngineInterface function getEngine() {
-		return Application._cfw.engine;
+		return getApp().get('engine');
 	}
 
 	public cffwk.base.Router function getRouter() {
 		return getBeanFactory().getBean('Router');
 	}
 
-	public void function setRender(required cffwk.base.Render render) {
-		Application._cfw.render = arguments.render;
+	public void function setRender(required component render) {
+		getApp().set('render', arguments.render);
 	}
 
-	public cffwk.base.Render function getRender() {
-		return Application._cfw.render;
+	public component function getRender() {
+		return getApp().get('render');
 	}
 
 	public void function setBeanFactory(required component factory) {
-		Application._cfw.beanFactory = arguments.factory;
+		getApp().set('beanFactory', arguments.factory);
 	}
 
 	public component function getBeanFactory() {
-		if (structKeyExists(Application, '_cfw') && structKeyExists(Application._cfw, 'beanFactory')) {
-			return Application._cfw.beanFactory;
-		}
+		return getApp().get('beanFactory');
 	}
 
 	public component function newConfigObject() {
-		return createObject('component', 'cffwk.base.conf.Config').init();
+		return new cffwk.base.conf.Config();
 	}
 
 	public cffwk.base.engines.EngineInterface function detectEngine() {
-		var detector = createObject('component', 'cffwk.base.engines.EngineDetector').init();
+		var detector = new cffwk.base.engines.EngineDetector();
 		return detector.getEngine();
 	}
 
 	public cffwk.model.Chrono function getChrono() {
-		return Application._cfw.chrono;
+		return getApp().get('chrono', new cffwk.model.Chrono());
 	}
 
 	private void function _restartConfig() {
 
-		Application._cfw = structNew();
-		Application._cfw.chrono = new cffwk.model.Chrono();
-		Application._cfw.chrono.start('Config');
+		var app = getApp();
+		app.set('load_in_progress', true);
+		app.set('chrono', new cffwk.model.Chrono());
+		app.get('chrono').start('Config');
 
 		var cfg = newConfigObject();
+		var engines = ['RailoEngine.cfc', 'LuceeEngine.cfc', 'ColdfusionEngine', 'Cf9Engine'];
 
 		if (!isInstanceOf(cfg, 'cffwk.base.conf.Config')) {
 			throw('Config object must be at least an heritance of base.conf.Config');
 		}
 
-		setConfig(cfg);
+		app.set('config', cfg);
 		preConfigProcess();
 
-		setVersion('0.10');
+		app.set('version', '0.10');
 		addParam('version', getVersion());
 
 		addParam('viewsPath', 'viewing/views/');
 		addParam('layoutsPath', 'viewing/layouts/');
 		addParam('widgetsPath', 'viewing/widgets/');
 
-		addParam('render', 'RenderBase');
+		addParam('render', 'Render');
 		addParam('defaultController', 'DefaultCtrl');
 		addParam('defaultControllerAction', 'defaultAction');
 
@@ -128,25 +136,29 @@ component accessors='true' {
 		addParam('beanFactory', 'cffwk.ext.ioc');
 		addParam('iocPath', '/cffwk/base,/cffwk/controllers,/cffwk/model,/base,/controllers,/helpers,/model,/services');
 		addParam('iocSingletonRegex', '(Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$');
-		addParam('iocExcludeArray', ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc', 'RailoEngine.cfc', 'LuceeEngine.cfc']);
+
+		var excludes = ['App.cfc', 'Config.cfc', 'AbstractController.cfc', 'AbstractService.cfc', 'AbstractScope.cfc'];
+		excludes = listToArray(listAppend(arrayToList(excludes), arrayToList(engines)));
+
+		addParam('iocExcludeArray', excludes);
 
 		addParamByEnv('debug', 'debug', true);
 
-		Application._cfw.chrono.start('Params init');
+		app.get('chrono').start('Params init');
 		setParams();
-		Application._cfw.chrono.end('Params init');
+		app.get('chrono').end('Params init');
 
-		Application._cfw.chrono.start('Params load');
+		app.get('chrono').start('Params load');
 		getConfig().loadParams();
-		Application._cfw.chrono.end('Params load');
+		app.get('chrono').end('Params load');
 
-		Application._cfw.chrono.start('Check views');
+		app.get('chrono').start('Check views');
 		_checkViewFolders();
-		Application._cfw.chrono.end('Check views');
+		app.get('chrono').end('Check views');
 
-		Application._cfw.chrono.start('Detect engine');
+		app.get('chrono').start('Detect engine');
 		setEngine(detectEngine());
-		Application._cfw.chrono.end('Detect engine');
+		app.get('chrono').end('Detect engine');
 
 		if (!isNull(getConfig().getParam('datasource'))) {
 			this.datasource = getConfig().getParam('datasource');
@@ -165,11 +177,12 @@ component accessors='true' {
 		postConfigProcess();
 		getBeanFactory().getBean('Router');
 
-		Application._cfw.chrono.start('Routes load');
+		app.get('chrono').start('Routes load');
 		setRoutes();
-		Application._cfw.chrono.end('Routes load');
+		app.get('chrono').end('Routes load');
 
-		Application._cfw.chrono.end('Config');
+		app.get('chrono').end('Config');
+		app.delete('load_in_progress');
 	}
 
 	private string function _detectCorrectPath(required string folder) {
@@ -200,9 +213,9 @@ component accessors='true' {
 		getConfig().setParam('widgetsPath', _detectCorrectPath(getConfig().getParam('widgetsPath')) );
 	}
 
-	private void function _configBeanFactory() {
+	private void function _configBeanFactory() output=true {
 
-		getChrono().start('BeanFactory Init');
+		getApp().get('chrono').start('BeanFactory Init');
 		if (getConfig().getParam('beanFactory') == 'cffwk.ext.ioc') {
 
 			var path = getConfig().getParam('iocPath');
@@ -214,6 +227,9 @@ component accessors='true' {
 			beanFactory.addBean('config', getConfig());
 			beanFactory.addBean('engine', getEngine());
 			beanFactory.addBean('chrono', getChrono());
+
+			beanFactory.addBean('RequestScope', beanFactory.getBean('RequestScope'));
+			beanFactory.addBean('SessionScope', beanFactory.getBean('SessionScope'));
 
 			if (!isNull(getConfig().getParam('datasource'))) {
 				beanFactory.addBean('datasource', getConfig().getParam('datasource'));
@@ -227,11 +243,12 @@ component accessors='true' {
 			setBeanFactory(beanFactory);
 		}
 
-		getChrono().end('BeanFactory Init');
+		getApp().get('chrono').end('BeanFactory Init');
 	}
 
 	public void function preIOCLoadProcess() {}
 	public void function postIOCLoadProcess() {}
+
 	public void function preConfigProcess() {}
 	public void function postConfigProcess() {}
 
@@ -246,19 +263,23 @@ component accessors='true' {
 	}
 
 	public void function onSessionStart() {
-		getBeanFactory().getBean('Session').reset();
+		if (!getApp().has('load_in_progress')) {
+			getBeanFactory().getBean('SessionScope').reset();
+		}
 	}
 
 	public void function onRequestStart(string targetPage) {
-		Application._cfw.chrono.reset();
 
-		if (structKeyExists(URL, 'reload')) {
+		if (structKeyExists(URL, 'reload') && !getApp().has('load_in_progress')) {
 			_restartConfig();
+
+		} else {
+			getApp().get('chrono').reset();
 
 		}
 
-		getBeanFactory().getBean('HttpRequest');
-		Application._cfw.chrono.start('Request');
+		getBeanFactory().getBean('RequestScope');
+		getApp().get('chrono').start('Request');
 	}
 
 	public void function onRequest(string targetPage) output=true {
@@ -266,14 +287,16 @@ component accessors='true' {
 	}
 
 	public void function onRequestEnd() {
-		Application._cfw.chrono.end('Request');
+		getApp().get('chrono').end('Request');
 
 		if (getConfig().getParam('debug')) {
-			getChrono().printResults();
+			getApp().get('chrono').printResults();
 
 		}
 
-		getBeanFactory().getBean('HttpRequest').reset();
+		getBeanFactory().getBean('RequestScope').reset();
+
+		ioc = new cffwk.ext.cfFactory();
 
 		if (structKeyExists(URL, 'restart') && getConfig().getParam('debug')) {
 			applicationStop();
@@ -281,7 +304,7 @@ component accessors='true' {
 	}
 
 	public void function onSessionStop() {
-		getBeanFactory().getBean('Session').reset();
+		getBeanFactory().getBean('SessionScope').reset();
 	}
 
 	/***

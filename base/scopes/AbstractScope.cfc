@@ -22,7 +22,7 @@ component output='false' {
 	property type='string' name='scope_uuid';
 	property type='string' name='scope_name';
 
-	public cffwk.base.scopes.AbstractScope function init(required struct scope) {
+	private cffwk.base.scopes.AbstractScope function init(required struct scope) {
 		variables.scope = arguments.scope;
 		_createScope();
 		return this;
@@ -54,11 +54,11 @@ component output='false' {
 		return getTickCount() - get('started', getTickCount());
 	}
 
-	public any function set(required string name, required any value) {
+	public void function set(required string name, required any value) {
 		variables.scope[variables.scope_name][arguments.name] = arguments.value;
 	}
 
-	public any function append(required string name, required any value) {
+	public void function append(required string name, required any value) {
 		if (!has(arguments.name)) {
 			set(arguments.name, arrayNew(1));
 
@@ -67,7 +67,7 @@ component output='false' {
 		arrayAppend(variables.scope[variables.scope_name][arguments.name], arguments.value);
 	}
 
-	public any function incr(required string name, numeric increment = 1) {
+	public void function incr(required string name, numeric increment = 1) {
 		if (!has(arguments.name)) {
 			set(arguments.name, 0);
 
@@ -76,7 +76,7 @@ component output='false' {
 		variables.scope[variables.scope_name][arguments.name] += arguments.increment;
 	}
 
-	public any function decr(required string name, numeric increment = 1) {
+	public void function decr(required string name, numeric increment = 1) {
 		if (!has(arguments.name)) {
 			set(arguments.name, 0);
 
@@ -85,12 +85,18 @@ component output='false' {
 		variables.scope[variables.scope_name][arguments.name] -= arguments.increment;
 	}
 
-	public any function has(required string name) {
+	public boolean function has(required string name) {
 		if (structKeyExists(variables.scope[variables.scope_name], arguments.name)) {
 			return true;
 		}
 
 		return false;
+	}
+
+	public void function delete(required string name) {
+		if (structKeyExists(variables.scope[variables.scope_name], arguments.name)) {
+			structDelete(variables.scope[variables.scope_name], arguments.name);
+		}
 	}
 
 	public any function get(required string name, any defaultValue = '') {

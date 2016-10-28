@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component extends='cffwk.base.scopes.AbstractScope' output='false' {
 
-	public cffwk.base.scopes.ApplicationScope function init() {
+	public cffwk.base.scopes.Applicationscope function init() {
 		super.init(APPLICATION);
 		return this;
 	}

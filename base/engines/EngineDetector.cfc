@@ -41,15 +41,18 @@ component accessors=true output=false persistent=false {
 
 		if (structKeyExists(server, 'coldfusion') && findNoCase('coldfusion', server.coldfusion.productName) > 0) {
 
-			var cfEngineClass = 'cffwk.base.engines.ColdfusionEngine';
+			var cfEngineClass = '';
 			var majorVersion = listGetAt(server.coldfusion.productVersion, 1, ',');
 
-			if (majorVersion == 9) {
+			if (majorVersion == '9') {
 				cfEngineClass = 'cffwk.base.engines.Cf9Engine';
+
+			} else {
+				cfEngineClass = 'cffwk.base.engines.ColdfusionEngine';
+
 			}
 
-			return _initEngine(cfEngineClass, server.coldfusion.productName, cfEngineClass);
-
+			return _initEngine(cfEngineClass, server.coldfusion.productName, server.coldfusion.productVersion);
 		}
 
 		throw('No Applicable Engine found !');

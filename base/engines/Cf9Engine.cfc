@@ -16,11 +16,31 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --->
-<cfcomponent extends="cffwk.base.engines.ColdfusionEngine" accessors="true" output="false">
+<cfcomponent implements="cffwk.base.engines.EngineInterface" accessors="true" output="false">
 
-	<cffunction name="init" access="public" returntype="cffwk.base.engines.Cf9nEngine">
-		<cfset super.init() />
+	<cfproperty type='string' name='name' />
+	<cfproperty type='string' name='version' />
+
+	<cffunction name="init" access="public" returntype="cffwk.base.engines.Cf9Engine">
 		<cfreturn this />
+	</cffunction>
+
+	<cffunction name="setName" returntype="void">
+		<cfargument type="string" name="name" required="true" />
+		<cfset variables.name = arguments.name />
+	</cffunction>
+
+	<cffunction name="getName" returntype="string">
+		<cfreturn variables.name />
+	</cffunction>
+
+	<cffunction name="setVersion" returntype="void">
+		<cfargument type="string" name="version" required="true" />
+		<cfset variables.version = arguments.version />
+	</cffunction>
+
+	<cffunction name="getVersion" returntype="string">
+		<cfreturn variables.version />
 	</cffunction>
 
 	<cffunction name="hardRedirect" access="public" returntype="void">
@@ -31,12 +51,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	</cffunction>
 
-	<cffunction name="invoke" access="public" returntype="void">
-		<cfargument name="instance" type="component" required="true" />
-		<cfargument name="cftName" type="string" required="true" />
-		<cfargument name="params" type="struct" required="true" />
+	<!--- public void function invoke(required component instance, required string fctName, required any params); --->
 
-		<cfinvoke component="#arguments.instance#" method="#arguments.cftName#" argumentcollection="#arguments.params#" />
+	<cffunction access="public" returntype="void" name="invoke">
+		<cfargument required="true" type="component" name="instance" />
+		<cfargument required="true" type="string" name="fctName" />
+		<cfargument required="true" type="any" name="params" />
+
+		<cfinvoke component="#arguments.instance#" method="#arguments.fctName#" argumentcollection="#arguments.params#">
+		</cfinvoke>
 
 	</cffunction>
 
