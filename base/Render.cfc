@@ -28,7 +28,8 @@ component output='false' accessors='true' {
 	property type='cffwk.base.scopes.SessionScope' name='SessionScope';
 	property type='cffwk.base.scopes.RequestScope' name='RequestScope';
 
-	property type='component' name='BeanFactory';
+	property type='cffwk.ext.cfFactory' name='BeanFactory';
+	property type='string' name='datasource';
 
 	public cffwk.base.Render function init() {
 		return this;
@@ -76,13 +77,13 @@ component output='false' accessors='true' {
 	}
 
 	public any function getDebugPath() {
-		//return variables.requestScope.get('path');
+		return variables.requestScope.get('path');
 	}
 
 	public void function debugPath(required string viewFile) {
-//		if (variables.config.getParam('debug')) {
-//			variables.requestScope.append('path', arguments.viewFile);
-//		}
+		if (variables.config.getParam('debug')) {
+			variables.requestScope.append('path', arguments.viewFile);
+		}
 	}
 
 	private struct function _populateArgs(required struct args) {

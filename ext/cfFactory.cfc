@@ -8,31 +8,167 @@ component accessors=true output=false persistent=false {
 
 	property type="string" name="exclusionRegex";
 	property type="array" name="aComponents";
+	property type="struct" name="definitions";
+	property type="struct" name="constants";
 
 	public component function init() {
+		variables.exclusionRegex = '(Abstract[a-zA-Z]+|App|Null|Engine|Application)\.cfc$';
+		variables.singletonRegex = '(Config|Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$';
 
-		variables.exclusionRegex = '(Abstract[a-zA-Z]+|App|Null)\.cfc$';
-		variables.aComponents = arrayNew(1);
+		variables.definitions = {components= {}, alias= {}};
+		variables.constants = {};
+		variables.beansCache = {'cffwk.ext.cfFactory' = this};
 
-		browseDirectory('/cffwk');
+		variables.simpleValueTypes = ['struct', 'array', 'numeric', 'string', 'date', 'query', 'binary', 'guid', 'uuid', 'any'];
+
 		return this;
+	}
 
+	public void function addDirectories(required array directory) output=true {
+		for (var i = 1; i <= arrayLen(arguments.directory); i++) {
+			_browseDirectory(arguments.directory[i]);
+
+		}
 
 	}
 
-	private void function browseDirectory(required string directory) {
+	public void function addConstant(required string name, required any value) {
+		variables.constants[arguments.name] = arguments.value;
+	}
+
+	public void function addToCache(required any object) {
+		var className = getComponentMetaData(arguments.object).fullName;
+		variables.beansCache[className] = arguments.object;
+		_addBeanInfo(className);
+	}
+
+	public void function addAlias(required string alias, required string className) {
+		variables.definitions.alias[arguments.alias] = arguments.className;
+	}
+
+	public any function getBean(required string className) {
+		return getObject(arguments.className);
+	}
+
+	public any function getObject(required string className) output=true {
+		var cmpDefinition = _getDefinition(arguments.className);
+		var bean = false;
+
+		if (structIsEmpty(cmpDefinition)) {
+			throw('Unable to get bean for ' & arguments.className);
+			return bean;
+		}
+
+		if (structKeyExists(variables.beansCache, cmpDefinition.className)) {
+			bean = variables.beansCache[cmpDefinition.className];
+
+		} else {
+			var initArgs = {};
+
+			if (structKeyExists(cmpDefinition.functions, 'init')) {
+				var initDef = cmpDefinition.functions.init;
+
+				for (var i = 1; i <= arrayLen(initDef.parameters); i++) {
+					initArgs[ initDef.parameters[i].name ] = _getArgumentValue(initDef.parameters[i]);
+				}
+			}
+
+			evaluate('bean = new ' & cmpDefinition.className & '( argumentCollection = initArgs )');
+
+			if (cmpDefinition.singleton == true) {
+				variables.beansCache[cmpDefinition.className] = bean;
+
+			}
+
+		}
+
+		for (var p = 1; p <= arrayLen(cmpDefinition.properties); p++) {
+			var setter = 'set' & cmpDefinition.properties[p].name;
+
+			if (structKeyExists(cmpDefinition.functions, setter)) {
+				var value = _getArgumentValue(cmpDefinition.properties[p]);
+
+				if (!isNull(value)) {
+					evaluate('bean.' & setter & '(value)');
+
+				}
+
+			}
+
+		}
+
+
+		return bean;
+	}
+
+	public function getDefinition(required string className) {
+		return _getDefinition(arguments.className)
+	}
+
+	private struct function _getDefinition(required string className) {
+
+		if (structKeyExists(variables.definitions.components, arguments.className)) {
+			return variables.definitions.components[arguments.className];
+
+		} else if (structKeyExists(variables.definitions.alias, arguments.className)) {
+			arguments.className = variables.definitions.alias[arguments.className];
+			return variables.definitions.components[arguments.className];
+
+		}
+
+		return {};
+	}
+
+	private any function _getBeanByDefName(required string definitionName) {
+		var def = _getDefinition(arguments.definitionName);
+
+		if (!structIsEmpty(def)) {
+			return getObject(def.className);
+
+		}
+
+	}
+
+	private any function _getArgumentValue(required struct argFunct) {
+
+		if (structKeyExists(arguments.argFunct, 'type') && !arrayContains(variables.simpleValueTypes, arguments.argFunct.type)) {
+
+			if (arguments.argFunct.type != 'component') {
+				return _getBeanByDefName(arguments.argFunct.type);
+
+			} else {
+				return _getBeanByDefName(arguments.argFunct.name);
+
+			}
+
+
+		} else {
+
+			if (structKeyExists(variables.constants, arguments.argFunct.name)) {
+				return variables.constants[arguments.argFunct.name];
+			}
+
+			if (!structKeyExists(arguments.argFunct, 'type')) {
+				return _getBeanByDefName(arguments.argFunct.name);
+			}
+
+
+		}
+
+		return ;
+	}
+
+	private void function _browseDirectory(required string directory) {
 		var path2Escape = replace(expandPath(arguments.directory), arguments.directory, '');
 		var files = directoryList(expandPath(arguments.directory), true, 'path', '*.cfc');
 
 		for (var i = 1; i < arrayLen(files); i++) {
-			var curFile = replace(files[i], path2Escape, '');
+			var curFile = arguments.directory & replace(files[i], path2Escape, '');
 			curFile = replace(curFile, '\', '.', 'all');
 			curFile = replace(curFile, '/', '.', 'all');
 			curFile = reReplace(curFile, '^\.', '');
-			curFile = arguments.directory & '.' & curFile;
 
 			if (!reFind(variables.exclusionRegex, curFile, 1, false)) {
-				arrayAppend(variables.aComponents, curFile);
 				if (isSimpleValue(curFile)) {
 					_addBeanInfo(curFile);
 				}
@@ -40,41 +176,89 @@ component accessors=true output=false persistent=false {
 
 		}
 
-		writeDump(variables.aComponents);
+	}
+
+	private void function _addBeanInfo(required string className) {
+		if (findNoCase('WEB-INF', arguments.className) <= 0) {
+			arguments.className = reReplace(arguments.className, '\.cfc$', '');
+			var metaData = getComponentMetaData(arguments.className);
+
+			if (metaData.type != 'interface') {
+				var infos = _populateBeanInfo(metaData);
+				variables.definitions.components[infos.name] = infos;
+				variables.definitions.alias[infos.alias] = infos.name;
+				variables.definitions.alias[infos.shortName] = infos.name;
+
+			}
+
+		}
+	}
+
+	private boolean function _isFunctionApplicable(required struct functMeta) {
+		if (arrayLen(arguments.functMeta.parameters) > 1 && lCase(arguments.functMeta.name) != 'init') {
+			return false;
+		}
+
+		if (arguments.functMeta.access != 'public') {
+			return false;
+		}
+
+		if (!reFindNoCase('^(set.*|init)$', arguments.functMeta.name, 1, false)) {
+			return false;
+		}
+
+		return true;
 
 	}
 
-	private void function _addBeanInfo(required string beanName) {
-		arguments.beanName = reReplace(arguments.beanName, '\.cfc$', '');
-		var infos = _populateBeanInfo(getComponentMetaData(arguments.beanName));
-		writeDump(infos);
+	private struct function _getFunctionLightInfo(required struct functMeta) {
+		var parameters = {};
+		for (var i = 1; i <= arrayLen(arguments.functMeta.parameters); i++) {
+			parameters[ arguments.functMeta.parameters[i].name ] = arguments.functMeta.parameters[i];
+		}
+
+
+		return {'name'= arguments.functMeta.name, 'parameters'= parameters};
 	}
 
 	private struct function _populateBeanInfo(required struct beanInfo) {
-		var infos = {name= arguments.beanInfo.fullName};
+		var infos = {'name'= '', 'properties'= arrayNew(1), 'functions'= structNew()};
+
+		if (structKeyExists(arguments.beanInfo, 'extends')) {
+			structAppend(infos, _populateBeanInfo(arguments.beanInfo.extends));
+
+		}
 
 		if (structKeyExists(arguments.beanInfo, 'properties')) {
-			infos.properties = arguments.beanInfo.properties;
+			for (var i = 1; i <= arrayLen(arguments.beanInfo.properties); i++) {
+				arrayAppend(infos.properties, arguments.beanInfo.properties[i]);
+			}
+
 		}
 
 		if (structKeyExists(arguments.beanInfo, 'functions')) {
-
 			for (var i = 1; i <= arrayLen(arguments.beanInfo.functions); i++) {
-
-				if (reFindNoCase('^((is|set)[a-zA-Z]+|init)$', arguments.beanInfo.functions[i].name, 1, false)) {
-					infos.functions = arguments.beanInfo.functions;
-
+				if (_isFunctionApplicable(arguments.beanInfo.functions[i])) {
+					var curInfo = _getFunctionLightInfo(arguments.beanInfo.functions[i]);
+					infos.functions[curInfo.name] = curInfo;
 				}
 			}
 		}
 
-		if (structKeyExists(arguments.beanInfo, 'extends')) {
-			structAppend(infos, _populateBeanInfo(arguments.beanInfo.extends));
+
+		infos.accessors = arguments.beanInfo.accessors;
+		infos.className = arguments.beanInfo.fullName;
+		infos.singleton = false;
+
+		infos.name = arguments.beanInfo.fullName;
+		infos.shortName = listGetAt(infos.name, listLen(infos.name, '.'), '.');
+		infos.alias = listGetAt(infos.name, listLen(infos.name, '.') - 1, '.') & '.' & infos.shortName;
+
+		if (reFindNoCase(variables.singletonRegex, infos.name) >= 1) {
+			infos.singleton = true;
 		}
 
 		return infos;
-
-
 	}
 
 }

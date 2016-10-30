@@ -34,6 +34,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<cfreturn variables.name />
 	</cffunction>
 
+	<cffunction name="getClassName" returntype="string">
+		<cfreturn 'cffwk.base.engines.Cf9Engine' />
+	</cffunction>
+
 	<cffunction name="setVersion" returntype="void">
 		<cfargument type="string" name="version" required="true" />
 		<cfset variables.version = arguments.version />

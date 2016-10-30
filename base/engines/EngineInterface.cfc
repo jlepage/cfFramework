@@ -21,6 +21,8 @@ interface {
 	public void function setName(required string name);
 	public string function getName();
 
+	public string function getClassName();
+
 	public void function setVersion(required string version);
 	public string function getVersion();
 

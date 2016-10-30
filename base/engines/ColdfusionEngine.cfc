@@ -33,6 +33,10 @@ component implements='cffwk.base.engines.EngineInterface' accessors=true output=
 		return variables.name;
 	}
 
+	public string function getClassName(){
+		return 'cffwk.base.engines.ColdfusionEngine';
+	}
+
 	public void function setVersion(required string version) {
 		variables.version = arguments.version;
 	}

@@ -350,9 +350,6 @@
                 }
             }
         } while ( structKeyExists( md, 'extends' ) );
-        if (cfc == 'cffwk.base.Render') {
-        	writeDump(iocMeta);
-        }
         return iocMeta;
     }
 
