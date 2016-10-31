@@ -28,7 +28,7 @@ component output='false' accessors='true' {
 	property type='cffwk.base.scopes.SessionScope' name='SessionScope';
 	property type='cffwk.base.scopes.RequestScope' name='RequestScope';
 
-	property type='cffwk.ext.cfFactory' name='BeanFactory';
+	property type='cffwk.model.iocAdapters.iocAdapterInterface' name='iocAdapter';
 	property type='string' name='datasource';
 
 	public cffwk.base.Render function init() {
@@ -43,7 +43,7 @@ component output='false' accessors='true' {
 		arguments.fctArgs = _populateArgs(arguments.fctArgs);
 		structAppend(local, arguments.fctArgs);
 
-		var args = variables.beanFactory.getBean('RenderScope');
+		var args = variables.iocAdapter.getObject('RenderScope');
 		args.setParams(arguments.fctArgs);
 
 		savecontent variable='response' {
@@ -92,7 +92,7 @@ component output='false' accessors='true' {
 				arguments.args['messages'] = request.messages;
 
 			} else {
-				arguments.args['messages'] = variables.BeanFactory.getBean('Messages');
+				arguments.args['messages'] = variables.iocAdapter.getObject('Messages');
 
 			}
 		}
@@ -145,7 +145,11 @@ component output='false' accessors='true' {
 	}
 
 	public any function getBean(required string beanName) {
-		return variables.BeanFactory.getBean(arguments.beanName);
+		return variables.iocAdapter.getObject(arguments.beanName);
+	}
+
+	public any function getObject(required string beanName) {
+		return variables.iocAdapter.getObject(arguments.beanName);
 	}
 
 	public string function getContext() {
@@ -161,7 +165,7 @@ component output='false' accessors='true' {
 	}
 
 	public cffwk.model.Chrono function getChrono() {
-		return variables.BeanFactory.getBean('Chrono');
+		return variables.iocAdapter.getObject('Chrono');
 	}
 
 	public string function getUrl(required string routeId, struct args = {}) {

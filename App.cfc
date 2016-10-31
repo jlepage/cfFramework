@@ -64,7 +64,7 @@ component accessors='true' {
 	}
 
 	public cffwk.base.Router function getRouter() {
-		return getBeanFactory().getBean('Router');
+		return getIocAdapter().getObject('Router');
 	}
 
 	public void function setRender(required component render) {
@@ -75,12 +75,12 @@ component accessors='true' {
 		return getApp().get('render');
 	}
 
-	public void function setBeanFactory(required component factory) {
-		getApp().set('beanFactory', arguments.factory);
+	public void function setIocAdapter(required component adapter) {
+		getApp().set('iocAdapter', arguments.adapter);
 	}
 
-	public component function getBeanFactory() {
-		return getApp().get('beanFactory');
+	public component function getIocAdapter() {
+		return getApp().get('iocAdapter');
 	}
 
 	public component function newConfigObject() {
@@ -134,7 +134,7 @@ component accessors='true' {
 		addParam('sessionUserBean', 'User');		// must implements base.model.users.UserInterface
 		addParam('sessionProfilBean', 'Profil');	// must implements base.model.users.ProfilInterface
 
-		addParam('beanFactory', 'myne');
+		addParam('iocAdapter', 'cffwk.model.iocAdapters.elIocNessAdapter');
 		addParam('iocPath', '/cffwk,/controllers,/helpers,/model,/services');
 		addParam('iocSingletonRegex', '(Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$');
 
@@ -171,12 +171,12 @@ component accessors='true' {
 		}
 
 		preIOCLoadProcess();
-		_configBeanFactory();
+		_configIOCAdapter();
 		postIOCLoadProcess();
 		postConfigProcess();
 
 		postConfigProcess();
-		getBeanFactory().getBean('Router');
+		getIocAdapter().getObject('Router');
 
 		app.get('chrono').start('Routes load');
 		setRoutes();
@@ -219,61 +219,24 @@ component accessors='true' {
 		getConfig().setParam('widgetsPath', _detectCorrectPath(getConfig().getParam('widgetsPath')) );
 	}
 
-	private void function _configBeanFactory() output=true {
+	private void function _configIOCAdapter() output=true {
 
-		getApp().get('chrono').start('BeanFactory Init');
+		getApp().get('chrono').start('IOCAdapter Init');
+		var iocAdapter = createObject('component', getConfig().getParam('iocAdapter')).init();
 
-		if (getConfig().getParam('beanFactory') == 'cffwk.ext.ioc') {
+		iocAdapter.initIOC(getConfig());
+		iocAdapter.addObject(getEngine(), 'engine');
+		iocAdapter.addObject(getChrono(), 'chrono');
 
-			var path = getConfig().getParam('iocPath');
-			var single = getConfig().getParam('iocSingletonRegex');
-			var excludes = getConfig().getParam('iocExcludeArray');
-
-			var beanFactory = new cffwk.ext.ioc(path, {'singletonPattern' = single, 'exclude'= excludes});
-
-			beanFactory.addBean('config', getConfig());
-			beanFactory.addBean('engine', getEngine());
-			beanFactory.addBean('chrono', getChrono());
-
-			beanFactory.addBean('RequestScope', beanFactory.getBean('RequestScope'));
-			beanFactory.addBean('SessionScope', beanFactory.getBean('SessionScope'));
-
-			if (!isNull(getConfig().getParam('datasource'))) {
-				beanFactory.addBean('datasource', getConfig().getParam('datasource'));
-			}
-
-			if (!isNull(getConfig().getParam('render'))) {
-				var render = beanFactory.getBean(getConfig().getParam('render'));
-				setRender(render);
-			}
-
-			setBeanFactory(beanFactory);
-
-		} else {
-			var ioc = new cffwk.ext.cfFactory();
-			ioc.addDirectories( listToArray(getConfig().getParam('iocPath'), ',;') );
-			ioc.addAlias('beanFactory', 'cffwk.ext.cfFactory');
-			ioc.addAlias('Engine', getEngine().getClassName());
-			ioc.addToCache(getConfig());
-			ioc.addToCache(getEngine());
-			ioc.addToCache(getChrono());
-
-			if (!isNull(getConfig().getParam('datasource'))) {
-				ioc.addConstant('datasource', getConfig().getParam('datasource'));
-
-			}
-
-			if (!isNull(getConfig().getParam('render'))) {
-				var render = ioc.getObject(getConfig().getParam('render'));
-				setRender(render);
-
-			}
-
-			setBeanFactory(ioc);
+		if (!isNull(getConfig().getParam('render'))) {
+			var render = iocAdapter.getObject( getConfig().getParam('render') );
+			setRender(render);
 
 		}
 
-		getApp().get('chrono').end('BeanFactory Init');
+		setIocAdapter(iocAdapter);
+
+		getApp().get('chrono').end('IOCAdapter Init');
 	}
 
 	public void function preIOCLoadProcess() {}
@@ -288,28 +251,37 @@ component accessors='true' {
 	}
 
 	public boolean function onApplicationStart() {
-		_restartConfig();
+		getApp().set('ApplicationStart', true);
 		return true;
 	}
 
 	public void function onSessionStart() {
-		if (!getApp().has('load_in_progress')) {
-			getBeanFactory().getBean('SessionScope').reset();
+		if (!getApp().has('ApplicationStart')) {
+			getIocAdapter().getObject('SessionScope').reset();
 		}
 	}
 
 	public void function onRequestStart(string targetPage) {
+		var loadConfig = false;
 
-		if (structKeyExists(URL, 'reload') && !getApp().has('load_in_progress') && !getApp().has('applicationStart')) {
+		if (getApp().has('ApplicationStart')) {
+			loadConfig = true;
+		}
+
+		if (structKeyExists(URL, 'reload') && !getApp().has('load_in_progress')) {
+			loadConfig = true;
+		}
+
+		if (loadConfig) {
 			_restartConfig();
+			getApp().delete('ApplicationStart');
 
 		} else {
-			getApp().delete('applicationStart');
 			getApp().get('chrono').reset();
 
 		}
 
-		getBeanFactory().getBean('RequestScope');
+		getIocAdapter().getObject('RequestScope');
 		getApp().get('chrono').start('Request');
 	}
 
@@ -325,7 +297,7 @@ component accessors='true' {
 
 		}
 
-		getBeanFactory().getBean('RequestScope').reset();
+		getIocAdapter().getObject('RequestScope').reset();
 
 		if (structKeyExists(URL, 'restart') && getConfig().getParam('debug')) {
 			getApp().reset();
@@ -334,7 +306,7 @@ component accessors='true' {
 	}
 
 	public void function onSessionStop() {
-		getBeanFactory().getBean('SessionScope').reset();
+		getIocAdapter().getObject('SessionScope').reset();
 	}
 
 	/***

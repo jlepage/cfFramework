@@ -19,14 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <cfcomponent accessors="true" output="false">
 
 	<cfproperty name="config" type="cffwk.base.conf.Config" />
-	<cfproperty name="beanFactory" type="component" />
+	<cfproperty name="iocAdapter" type="cffwk.model.iocAdapters.iocAdapterInterface" />
 
 	<cffunction name="init" returntype="cffwk.model.users.UserGateway">
 		<cfreturn this />
 	</cffunction>
 
 	<cffunction name="getUserDAO" returntype="cffwk.model.users.io.UserDAOInterface">
-		<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserDAO') ) />
+		<cfreturn variables.iocAdapter.getObject( variables.config.getParam('sessionUserDAO') ) />
 	</cffunction>
 
 
@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<cfset var user = dao.getByAccess(arguments.login, arguments.password) />
 
 		<cfif isNull(user) || !user.isValid()>
-			<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserBean') ) />
+			<cfreturn variables.iocAdapter.getObject( variables.config.getParam('sessionUserBean') ) />
 		</cfif>
 
 		<cfreturn user />
@@ -54,13 +54,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<cfif structKeyExists(session, 'user') && session.user neq ''>
 				<cfreturn dao.get(session.user) />
 			</cfif>
-			<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserBean') ) />
+			<cfreturn variables.iocAdapter.getObject( variables.config.getParam('sessionUserBean') ) />
 		</cfif>
 
 		<cfset var user = dao.getByLogin(getAuthUser()) />
 
 		<cfif isNull(user) || !user.isValid()>
-			<cfreturn getBeanFactory().getBean( getConfig().getParam('sessionUserBean') ) />
+			<cfreturn variables.iocAdapter.getObject( variables.config.getParam('sessionUserBean') ) />
 		</cfif>
 
 		<cfreturn user />

@@ -58,13 +58,29 @@ component output='false' {
 		variables.scope[variables.scope_name][arguments.name] = arguments.value;
 	}
 
-	public void function append(required string name, required any value) {
+	public void function append(required string name, required any value, boolean forceList = false) {
+
 		if (!has(arguments.name)) {
-			set(arguments.name, arrayNew(1));
+			if (arguments.forceList == true) {
+				variables.scope[variables.scope_name][arguments.name] = '';
+
+			} else {
+				variables.scope[variables.scope_name][arguments.name] = arrayNew(1);
+
+			}
 
 		}
 
-		arrayAppend(variables.scope[variables.scope_name][arguments.name], arguments.value);
+		if (isSimpleValue(variables.scope[variables.scope_name][arguments.name])) {
+			listAppend(variables.scope[variables.scope_name][arguments.name], arguments.value);
+
+		}
+
+		if (isArray(variables.scope[variables.scope_name][arguments.name])) {
+			arrayAppend(variables.scope[variables.scope_name][arguments.name], arguments.value);
+
+		}
+
 	}
 
 	public void function incr(required string name, numeric increment = 1) {

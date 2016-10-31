@@ -33,7 +33,9 @@ component output='false' accessors='true' {
 		variables.env = '_default_';
 		variables.envRules = arrayNew(1);
 		variables.contextRules = arrayNew(1);
+
 		variables.params = structNew();
+
 		variables.paramsByIp = structNew();
 		variables.paramsByEnv = structNew();
 		variables.paramsByHostname = structNew();

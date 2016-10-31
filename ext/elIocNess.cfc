@@ -1,9 +1,21 @@
-/**
- * cfFactory
- *
- * @author JLepage
- * @date 28/10/16
- **/
+/*****
+
+Copyright (c) 2016, Jerome Lepage (j@cfm.io)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+****/
 component accessors=true output=false persistent=false {
 
 	property type="string" name="exclusionRegex";
@@ -17,7 +29,7 @@ component accessors=true output=false persistent=false {
 
 		variables.definitions = {components= {}, alias= {}};
 		variables.constants = {};
-		variables.beansCache = {'cffwk.ext.cfFactory' = this};
+		variables.beansCache = {'cffwk.ext.elIocNess' = this};
 
 		variables.simpleValueTypes = ['struct', 'array', 'numeric', 'string', 'date', 'query', 'binary', 'guid', 'uuid', 'any'];
 
@@ -36,10 +48,15 @@ component accessors=true output=false persistent=false {
 		variables.constants[arguments.name] = arguments.value;
 	}
 
-	public void function addToCache(required any object) {
-		var className = getComponentMetaData(arguments.object).fullName;
+	public void function addToCache(required any object, string alias = '') {
+		var className = getMetaData(arguments.object).fullName;
 		variables.beansCache[className] = arguments.object;
 		_addBeanInfo(className);
+
+		if (arguments.alias != '') {
+			addAlias(arguments.alias, className);
+		}
+
 	}
 
 	public void function addAlias(required string alias, required string className) {
@@ -55,7 +72,7 @@ component accessors=true output=false persistent=false {
 		var bean = false;
 
 		if (structIsEmpty(cmpDefinition)) {
-			throw('Unable to get bean for ' & arguments.className);
+			throw('Unable to get object for name "' & arguments.className & '"');
 			return bean;
 		}
 
@@ -67,9 +84,10 @@ component accessors=true output=false persistent=false {
 
 			if (structKeyExists(cmpDefinition.functions, 'init')) {
 				var initDef = cmpDefinition.functions.init;
+				var paramNames = structKeyArray(initDef.parameters);
 
-				for (var i = 1; i <= arrayLen(initDef.parameters); i++) {
-					initArgs[ initDef.parameters[i].name ] = _getArgumentValue(initDef.parameters[i]);
+				for (var i = 1; i <= arrayLen(paramNames); i++) {
+					initArgs[ initDef.parameters[paramNames[i]].name ] = _getArgumentValue(initDef.parameters[paramNames[i]]);
 				}
 			}
 
@@ -92,9 +110,7 @@ component accessors=true output=false persistent=false {
 					evaluate('bean.' & setter & '(value)');
 
 				}
-
 			}
-
 		}
 
 
@@ -102,7 +118,7 @@ component accessors=true output=false persistent=false {
 	}
 
 	public function getDefinition(required string className) {
-		return _getDefinition(arguments.className)
+		return _getDefinition(arguments.className);
 	}
 
 	private struct function _getDefinition(required string className) {
@@ -160,22 +176,25 @@ component accessors=true output=false persistent=false {
 
 	private void function _browseDirectory(required string directory) {
 		var path2Escape = replace(expandPath(arguments.directory), arguments.directory, '');
-		var files = directoryList(expandPath(arguments.directory), true, 'path', '*.cfc');
 
-		for (var i = 1; i < arrayLen(files); i++) {
-			var curFile = arguments.directory & replace(files[i], path2Escape, '');
-			curFile = replace(curFile, '\', '.', 'all');
-			curFile = replace(curFile, '/', '.', 'all');
-			curFile = reReplace(curFile, '^\.', '');
+		if (directoryExists(expandPath(arguments.directory))) {
+			var files = directoryList(expandPath(arguments.directory), true, 'path', '*.cfc');
 
-			if (!reFind(variables.exclusionRegex, curFile, 1, false)) {
-				if (isSimpleValue(curFile)) {
-					_addBeanInfo(curFile);
+			for (var i = 1; i <= arrayLen(files); i++) {
+				var curFile = arguments.directory & replace(files[i], path2Escape, '');
+				curFile = replace(curFile, '\', '.', 'all');
+				curFile = replace(curFile, '/', '.', 'all');
+				curFile = reReplace(curFile, '^\.', '');
+
+
+				if (!reFind(variables.exclusionRegex, curFile, 1, false)) {
+					if (isSimpleValue(curFile)) {
+						_addBeanInfo(curFile);
+
+					}
 				}
 			}
-
 		}
-
 	}
 
 	private void function _addBeanInfo(required string className) {
@@ -199,7 +218,7 @@ component accessors=true output=false persistent=false {
 			return false;
 		}
 
-		if (arguments.functMeta.access != 'public') {
+		if (structKeyExists(arguments.functMeta, 'access') && arguments.functMeta.access != 'public') {
 			return false;
 		}
 
@@ -246,7 +265,10 @@ component accessors=true output=false persistent=false {
 		}
 
 
-		infos.accessors = arguments.beanInfo.accessors;
+		if (structKeyExists(arguments.beanInfo, 'accessors')) {
+			infos.accessors = arguments.beanInfo.accessors;
+		}
+
 		infos.className = arguments.beanInfo.fullName;
 		infos.singleton = false;
 

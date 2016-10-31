@@ -24,28 +24,28 @@ component output='false' accessors='true' {
 	property type='cffwk.model.users.UserGateway' name='userGateway';
 
 	property type='component' name='render';
-	property type='component' name='beanFactory';
+	property type='cffwk.model.iocAdapters.iocAdapterInterface' name='iocAdapter';
 
 	public cffwk.controllers.AbstractController function init() {
 		return this;
 	}
 
 	public cffwk.base.scopes.RequestScope function getRequest() {
-		return getBeanFactory().getBean('RequestScope');
+		return variables.iocAdapter.getObject('RequestScope');
 	}
 
 	public cffwk.base.scopes.SessionScope function getSession() {
-		return getBeanFactory().getBean('SessionScope');
+		return variables.iocAdapter.getObject('SessionScope');
 	}
 
 	public string function getContext() {
-		return getConfig().getContext( getRequest() );
+		return variables.config.getContext( getRequest() );
 	}
 
 	public boolean function signInUser(required string login, required string password) {
-		var user = getUserGateway().findUser(arguments.login, arguments.password);
+		var user = variables.userGateway.findUser(arguments.login, arguments.password);
 		if (user.isValid()) {
-			getUserGateway().signIn(user);
+			variables.userGateway.signIn(user);
 			return true;
 		}
 
@@ -53,12 +53,12 @@ component output='false' accessors='true' {
 	}
 
 	public void function signOutUser() {
-		getUserGateway().signOut();
+		variables.userGateway.signOut();
 	}
 
 	public boolean function redirectAnonymous() {
 		var messages = get('Messages');
-		var user = getUserGateway().getAuthUser();
+		var user = variables.userGateway.getAuthUser();
 
 		if (isNull(user) || !user.isValid()) {
 			messages.addError('User invalid or disconnected!');
@@ -70,15 +70,15 @@ component output='false' accessors='true' {
 	}
 
 	public any function get(required string serviceName) {
-		return getBeanFactory().getBean(arguments.serviceName);
+		return variables.iocAdapter.getObject(arguments.serviceName);
 	}
 
 	public string function getURL(required string routeId, struct args = {}) {
-		return getRouter().getFormatedURL(arguments.routeId, arguments.args);
+		return variables.router.getFormatedURL(arguments.routeId, arguments.args);
 	}
 
 	public void function redirect(required string path, boolean hard = false) {
-		getRouter().redirectTo(arguments.path, arguments.hard);
+		variables.router.redirectTo(arguments.path, arguments.hard);
 	}
 
 }

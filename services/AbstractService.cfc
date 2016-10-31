@@ -19,14 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 component output='false' accessors='true' {
 
 	property type='cffwk.base.conf.Config' name='config';
-	property type='component' name='beanFactory';
+	property type='cffwk.model.iocAdapters.iocAdapterInterface' name='iocAdapter';
 
 	public base.services.AbstractService function init() {
 		return this;
 	}
 
 	public any function get(required string beanName) {
-		return getBeanFactory().getBean(arguments.beanName);
+		return variables.iocAdapter.getObject(arguments.beanName);
 	}
 
 }

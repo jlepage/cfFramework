@@ -41,7 +41,6 @@ component output='false' accessors='true' extends='cffwk.App' {
 		//addParam('sessionUserBean', 'User');		// must implements cffwk.model.users.UserInterface
 		//addParam('sessionProfilBean', 'Profil');	// must implements cffwk.model.users.ProfilInterface
 
-
 		addParam('ApplicationName', 'MyOwnApplicationName');
 		addParam('ApplicationVersion', '1.0');
 
@@ -59,7 +58,7 @@ component output='false' accessors='true' extends='cffwk.App' {
 
 
 	public void function postIOCLoadProcess() {
-		//getBeanFactory().addBean('myIOCParam', getConfig().getParam('myAppParam'));
+		//getIocAdapter().addConstant('myIOCParam', getConfig().getParam('myObject'));
 
 	}
 
