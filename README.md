@@ -3,6 +3,11 @@ cfFramework is a CFML MVC Framework
 
 Thanks by advance for your interest on cfFramework. 
 
+## changes for version 0.12
+ - add adapters for IOC abstraction
+ - switch default IOC to elIocNess
+ - move app config to ApplicationScope
+
 ## changes for version 0.11
  - moving the framework under a unique folder cffwk
  - Add Session object
@@ -34,8 +39,12 @@ If you have ideas or wishes features for next version, do not hesitate to ask me
 
 
 ### IOC use and copyrights
-cfFramework use IOC, DI/1 writed by Sean Corfield   
-Please refer to DI/1 website - https://github.com/framework-one/di1
+cfFramework now (> 0.11) use elIocNess IOC system, by default    
+But cfFramework include DI/1 too (writed by Sean Corfield).  
+      
+Please refer to DI/1 website - https://github.com/framework-one/di1 or    
+http://framework-one.github.io/documentation/using-di-one.html    
+
 
 	Copyright (c) 2010-2015, Sean Corfield
 	Licensed under the Apache License, Version 2.0 (the "License");

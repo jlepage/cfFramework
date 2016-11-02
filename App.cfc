@@ -114,7 +114,7 @@ component accessors='true' {
 		app.set('config', cfg);
 		preConfigProcess();
 
-		app.set('version', '0.10');
+		app.set('version', '0.12');
 		addParam('version', getVersion());
 
 		addParam('viewsPath', 'viewing/views/');
