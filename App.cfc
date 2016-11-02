@@ -75,11 +75,11 @@ component accessors='true' {
 		return getApp().get('render');
 	}
 
-	public void function setIocAdapter(required component adapter) {
+	public void function setIocAdapter(required cffwk.model.iocAdapters.iocAdapterInterface adapter) {
 		getApp().set('iocAdapter', arguments.adapter);
 	}
 
-	public component function getIocAdapter() {
+	public cffwk.model.iocAdapters.iocAdapterInterface function getIocAdapter() {
 		return getApp().get('iocAdapter');
 	}
 
@@ -134,7 +134,7 @@ component accessors='true' {
 		addParam('sessionUserBean', 'User');		// must implements base.model.users.UserInterface
 		addParam('sessionProfilBean', 'Profil');	// must implements base.model.users.ProfilInterface
 
-		addParam('iocAdapter', 'cffwk.model.iocAdapters.elIocNessAdapter');
+		addParam('iocAdapter', 'cffwk.model.iocAdapters.elIocNessAdapter'); // cffwk.model.iocAdapters.diOneAdapter
 		addParam('iocPath', '/cffwk,/controllers,/helpers,/model,/services');
 		addParam('iocSingletonRegex', '(Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$');
 
@@ -224,7 +224,9 @@ component accessors='true' {
 		getApp().get('chrono').start('IOCAdapter Init');
 		var iocAdapter = createObject('component', getConfig().getParam('iocAdapter')).init();
 
+
 		iocAdapter.initIOC(getConfig());
+
 		iocAdapter.addObject(getEngine(), 'engine');
 		iocAdapter.addObject(getChrono(), 'chrono');
 
@@ -256,7 +258,7 @@ component accessors='true' {
 	}
 
 	public void function onSessionStart() {
-		if (!getApp().has('ApplicationStart')) {
+		if (!getApp().has('ApplicationStart') && !structKeyExists(URL, 'reload')) {
 			getIocAdapter().getObject('SessionScope').reset();
 		}
 	}
@@ -278,6 +280,7 @@ component accessors='true' {
 
 		} else {
 			getApp().get('chrono').reset();
+			getApp().delete('load_in_progress');
 
 		}
 

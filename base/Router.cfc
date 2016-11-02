@@ -21,7 +21,7 @@ component output='false' accessors='true' {
 	property type='array' name='routes';
 	property type='cffwk.base.conf.Config' name='config';
 	property type='component' name='engine';
-	property type='cffwk.ext.cfFactory' name='cfFactory';
+	property type='cffwk.model.iocAdapters.iocAdapterInterface' name='iocAdapter';
 
 	property type='struct' name='cacheRouteIds';
 
@@ -45,7 +45,7 @@ component output='false' accessors='true' {
 	private struct function _getRuleToProcess(required string path) output='true' {
 
 		if (variables.config.getParam('debug')) {
-			variables.cfFactory.getBean('Chrono').start('Router');
+			variables.iocAdapter.getObject('Chrono').start('Router');
 
 		}
 
@@ -81,7 +81,7 @@ component output='false' accessors='true' {
 			}
 
 			if (variables.config.getParam('debug')) {
-				variables.cfFactory.getBean('RequestScope').append('routeDebug', interpretedRoute);
+				variables.iocAdapter.getObject('RequestScope').append('routeDebug', interpretedRoute);
 			}
 
 			if (variables.routes[i].getRoute() == arguments.path && variables.routes[i].isEnvMatch(curEnv) ) {
@@ -89,7 +89,7 @@ component output='false' accessors='true' {
 			}
 
 			if (structKeyExists(result, 'controllerClass')) {
-				result.controller = variables.cfFactory.getBean(result.controllerClass);
+				result.controller = variables.iocAdapter.getObject(result.controllerClass);
 
 				if (!isInstanceOf(result.controller, 'cffwk.controllers.AbstractController')) {
 					throw('Your controller ' & result.controllerClass & ' must be an instance of cffwk.controllers.AbstractController');
@@ -97,8 +97,8 @@ component output='false' accessors='true' {
 				}
 
 				if (variables.config.getParam('debug')) {
-					variables.cfFactory.getBean('RequestScope').set('route', interpretedRoute);
-					variables.cfFactory.getBean('Chrono').end('Router');
+					variables.iocAdapter.getObject('RequestScope').set('route', interpretedRoute);
+					variables.iocAdapter.getObject('Chrono').end('Router');
 
 				}
 
@@ -109,7 +109,7 @@ component output='false' accessors='true' {
 
 		result.controllerClass = variables.config.getParam('defaultController');
 		result.action = variables.config.getParam('defaultControllerAction');
-		result.controller = variables.cfFactory.getBean(result.controllerClass);
+		result.controller = variables.iocAdapter.getObject(result.controllerClass);
 
 		if (!isInstanceOf(result.controller, 'cffwk.controllers.AbstractController')) {
 			throw('Your default controller ' & result.controllerClass & ' must be an instance of cffwk.controllers.AbstractController');
@@ -117,8 +117,8 @@ component output='false' accessors='true' {
 		}
 
 		if (variables.config.getParam('debug')) {
-			variables.cfFactory.getBean('RequestScope').set('route', 'default');
-			variables.cfFactory.getBean('Chrono').end('Router');
+			variables.iocAdapter.getObject('RequestScope').set('route', 'default');
+			variables.iocAdapter.getObject('Chrono').end('Router');
 
 		}
 
@@ -170,7 +170,7 @@ component output='false' accessors='true' {
 	}
 
 	public void function addRoute(string id, string route, string controller, string action = 'default', string env = '*', string format = 'text/html') {
-		var curRoute = variables.cfFactory.getBean('Route').load(arguments);
+		var curRoute = variables.iocAdapter.getObject('Route').load(arguments);
 		variables.cacheRouteIds[arguments.id] = curRoute;
 		arrayAppend(variables.routes, curRoute);
 	}
@@ -181,14 +181,14 @@ component output='false' accessors='true' {
 		}
 
 		if (variables.config.getParam('debug')) {
-			variables.cfFactory.getBean('Chrono').start('Controller');
+			variables.iocAdapter.getObject('Chrono').start('Controller');
 		}
 
 		var process = _getRuleToProcess(arguments.pathToProcess);
 		variables.engine.invoke(process.controller, process.action, process.parameters);
 
 		if (variables.config.getParam('debug')) {
-			variables.cfFactory.getBean('Chrono').end('Controller');
+			variables.iocAdapter.getObject('Chrono').end('Controller');
 		}
 	}
 
@@ -199,13 +199,13 @@ component output='false' accessors='true' {
 			return;
 		}
 
-		if (!variables.cfFactory.getBean('RequestScope').has('redirects')) {
-			variables.cfFactory.getBean('RequestScope').set('redirects', 0);
+		if (!variables.iocAdapter.getObject('RequestScope').has('redirects')) {
+			variables.iocAdapter.getObject('RequestScope').set('redirects', 0);
 		}
 
-		variables.cfFactory.getBean('RequestScope').incr('redirects');
+		variables.iocAdapter.getObject('RequestScope').incr('redirects');
 
-		if (variables.cfFactory.getBean('RequestScope').get('redirects') > 10) {
+		if (variables.iocAdapter.getObject('RequestScope').get('redirects') > 10) {
 			throw({message = 'Too much redirections, maybe a infinite loop over here !'});
 		}
 

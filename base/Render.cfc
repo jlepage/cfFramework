@@ -55,7 +55,7 @@ component output='false' accessors='true' {
 	}
 
 	public any function getUser() {
-		var user = getUserGateway().getAuthUser();
+		var user = arguments.userGateway.getAuthUser();
 
 		if (isNull(user) || !user.isValid()) {
 			return false;
@@ -129,13 +129,13 @@ component output='false' accessors='true' {
 	}
 
 	public void function render(required string template, struct args = {}, string layout = 'default.cfm') {
-		if (getConfig().getParam('debug')) {
+		if (variables.config.getParam('debug')) {
 			getChrono().start('Render');
 		}
 
 		writeOutput( view(arguments.template, arguments.args, arguments.layout) );
 
-		if (getConfig().getParam('debug')) {
+		if (variables.config.getParam('debug')) {
 			getChrono().end('Render');
 		}
 	}

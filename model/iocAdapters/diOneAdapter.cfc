@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component accessors=true output=false persistent=false implements="cffwk.model.iocAdapters.iocAdapterInterface" {
+component accessors=true output=false persistent=false implements='cffwk.model.iocAdapters.iocAdapterInterface' {
 
-	property type="cffwk.ext.ioc" name="diOne";
+	property type='cffwk.ext.ioc' name='diOne';
 
 	public cffwk.model.iocAdapters.diOneAdapter function init() {
 		return this;
@@ -32,20 +32,24 @@ component accessors=true output=false persistent=false implements="cffwk.model.i
 
 		variables.diOne = new cffwk.ext.ioc(path, {'singletonPattern' = single, 'exclude'= excludes});
 
-		variables.diOne.addBean('iocAdapter', variables.diOne);
+		variables.diOne.addBean('iocAdapter', this);
 		variables.diOne.addBean('config', arguments.config);
 
 		variables.diOne.addBean('RequestScope', variables.diOne.getBean('RequestScope'));
 		variables.diOne.addBean('SessionScope', variables.diOne.getBean('SessionScope'));
 
 		if (!isNull(arguments.config.getParam('datasource'))) {
-			variables.diOne.addBean('datasource',arguments.config.getParam('datasource'));
+			variables.diOne.addBean('datasource', arguments.config.getParam('datasource'));
 		}
 
 	}
 
 	public component function getIOC() {
 		return variables.diOne;
+	}
+
+	public any function getObject(required string objectName) {
+		return variables.diOne.getBean(arguments.objectName);
 	}
 
 	public void function addObject(required any object, string name = '') {

@@ -35,13 +35,18 @@ component output='false' {
 		if (!structKeyExists(variables.scope, uuidKey) || arguments.force) {
 			variables.scope_uuid = createUUID();
 			variables.scope_name = prefix & variables.scope_uuid;
-
 			variables.scope[uuidKey] = variables.scope_uuid;
-			variables.scope[variables.scope_name] = structNew();
-			variables.scope[variables.scope_name]['started'] = getTickCount();
 
 		} else {
 			variables.scope_name = prefix & variables.scope[uuidKey];
+
+		}
+	}
+
+	private void function _checkScope() {
+		if (!structKeyExists(variables.scope, variables.scope_name)) {
+			variables.scope[variables.scope_name] = structNew();
+			variables.scope[variables.scope_name]['started'] = getTickCount();
 
 		}
 	}
@@ -51,14 +56,17 @@ component output='false' {
 	}
 
 	public numeric function getScopeLife() {
+		_checkScope();
 		return getTickCount() - get('started', getTickCount());
 	}
 
 	public void function set(required string name, required any value) {
+		_checkScope();
 		variables.scope[variables.scope_name][arguments.name] = arguments.value;
 	}
 
 	public void function append(required string name, required any value, boolean forceList = false) {
+		_checkScope();
 
 		if (!has(arguments.name)) {
 			if (arguments.forceList == true) {
@@ -84,6 +92,8 @@ component output='false' {
 	}
 
 	public void function incr(required string name, numeric increment = 1) {
+		_checkScope();
+
 		if (!has(arguments.name)) {
 			set(arguments.name, 0);
 
@@ -93,6 +103,8 @@ component output='false' {
 	}
 
 	public void function decr(required string name, numeric increment = 1) {
+		_checkScope();
+
 		if (!has(arguments.name)) {
 			set(arguments.name, 0);
 
@@ -102,6 +114,8 @@ component output='false' {
 	}
 
 	public boolean function has(required string name) {
+		_checkScope();
+
 		if (structKeyExists(variables.scope[variables.scope_name], arguments.name)) {
 			return true;
 		}
@@ -110,12 +124,16 @@ component output='false' {
 	}
 
 	public void function delete(required string name) {
+		_checkScope();
+
 		if (structKeyExists(variables.scope[variables.scope_name], arguments.name)) {
 			structDelete(variables.scope[variables.scope_name], arguments.name);
 		}
 	}
 
 	public any function get(required string name, any defaultValue = '') {
+		_checkScope();
+
 		if (structKeyExists(variables.scope[variables.scope_name], arguments.name)) {
 			return variables.scope[variables.scope_name][arguments.name];
 		}

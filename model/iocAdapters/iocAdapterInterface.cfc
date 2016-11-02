@@ -4,7 +4,7 @@
  * @author JLepage
  * @date 31/10/16
  **/
-interface accessors=true output=false persistent=false {
+interface {
 
 	public void function initIOC(required cffwk.base.conf.Config config);
 

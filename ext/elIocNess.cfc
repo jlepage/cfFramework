@@ -24,6 +24,9 @@ component accessors=true output=false persistent=false {
 	property type="struct" name="constants";
 
 	public component function init() {
+
+		variables.version = '0.9';
+
 		variables.exclusionRegex = '(Abstract[a-zA-Z]+|App|Null|Engine|Application)\.cfc$';
 		variables.singletonRegex = '(Config|Render|Router|Queue|Ctrl|Controller|DAO|Gw|Gateway|Service|Srv|Factory|Helper|Singleton)$';
 

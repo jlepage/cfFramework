@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component accessors=true output=false persistent=false implements="cffwk.model.iocAdapters.iocAdapterInterface" {
+component accessors=true output=false persistent=false implements='cffwk.model.iocAdapters.iocAdapterInterface' {
 
-	property type="cffwk.ext.elIocNess" name="elIocNess";
+	property type='cffwk.ext.elIocNess' name='elIocNess';
 
 	public cffwk.model.iocAdapters.elIocNessAdapter function init() {
 		return this;
@@ -27,20 +27,25 @@ component accessors=true output=false persistent=false implements="cffwk.model.i
 	public void function initIOC(required cffwk.base.conf.Config config) {
 
 		variables.elIocNess = new cffwk.ext.elIocNess();
-		variables.elIocNess.addDirectories( listToArray(getConfig().getParam('iocPath'), ',;') );
+		variables.elIocNess.addDirectories( listToArray(arguments.config.getParam('iocPath'), ',;') );
 
-		variables.elIocNess.addAlias('iocAdapter', 'cffwk.ext.elIocNess');
-		variables.elIocNess.addToCache(getConfig());
+		variables.elIocNess.addAlias('iocAdapter', 'cffwk.model.iocAdapters.elIocNessAdapter');
+		variables.elIocNess.addAlias('cffwk.model.iocAdapters.iocAdapterInterface', 'cffwk.model.iocAdapters.elIocNessAdapter');
+
+		variables.elIocNess.addToCache(arguments.config);
 
 		if (!isNull(arguments.config.getParam('datasource'))) {
 			variables.elIocNess.addConstant('datasource', arguments.config.getParam('datasource'));
-
 		}
 
 	}
 
 	public component function getIOC() {
 		return variables.elIocNess;
+	}
+
+	public any function getObject(required string objectName) {
+		return variables.elIocNess.getObject(arguments.objectName);
 	}
 
 	public void function addObject(required any object, string name = '') {
