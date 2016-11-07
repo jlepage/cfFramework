@@ -39,7 +39,10 @@ If you have ideas or wishes features for next version, do not hesitate to ask me
 
 
 ### IOC use and copyrights
-cfFramework now (> 0.11) use elIocNess IOC system, by default    
+cfFramework now (> 0.11) use elIocNess IOC system, by default  
+https://github.com/CFM-io/elIocNess/wiki    
+    
+     
 But cfFramework include DI/1 too (writed by Sean Corfield).  
       
 Please refer to DI/1 website - https://github.com/framework-one/di1 or    
@@ -64,7 +67,7 @@ http://framework-one.github.io/documentation/using-di-one.html
 ### Copyrights
 cfFramework is under GNU copyrights   
 
-	Copyright (c) 2016, Jerome Lepage (j@cfm.io)
+	Copyright (c) 2016, Jerome Lepage for CFM.io (j@cfm.io)
 	
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
