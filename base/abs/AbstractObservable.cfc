@@ -16,14 +16,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****/
-component extends='cffwk.base.abs.AbstractScope' output='false' {
+component abstract='true' output='false' accessors='true' {
 
-	public cffwk.base.scopes.Applicationscope function init() {
-		super.init(APPLICATION);
+	property type="array" name="observers";
+
+	public cffwk.base.abs.AbstractObservable function init() {
+		variables.observers = arrayNew(1);
 		return this;
 	}
 
-	public numeric function getApplicationLife() {
-		return super.getScopeLife();
+	public void function registerObserver(cffwk.base.abs.AbstractObserver observer) {
+		arrayAppend(variables.observers, arguments.observer);
 	}
+
+	package void function notifyObservers() {
+		for (var i = 1; i <= arrayLen(variables.observers); i++) {
+			variables.observers[i].notify(argumentsCollection= arguments);
+		}
+	}
+
 }

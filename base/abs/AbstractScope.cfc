@@ -22,7 +22,7 @@ component output='false' {
 	property type='string' name='scope_uuid';
 	property type='string' name='scope_name';
 
-	private cffwk.base.scopes.AbstractScope function init(required struct scope) {
+	private cffwk.base.abs.AbstractScope function init(required struct scope) {
 		variables.scope = arguments.scope;
 		_createScope();
 		return this;

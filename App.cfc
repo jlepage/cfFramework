@@ -39,6 +39,14 @@ component accessors='true' {
 		return this.app;
 	}
 
+	public void function setLogger(required component logger) {
+		getApp().set('logger', arguments.logger);
+	}
+
+	public component function getLogger() {
+		return getApp().get('logger');
+	}
+
 	public void function setVersion(required string vers) {
 		getApp().set('version', arguments.vers);
 	}
@@ -87,6 +95,15 @@ component accessors='true' {
 		return new cffwk.base.conf.Config();
 	}
 
+	public cffwk.base.logs.Logger function createLogger() {
+		var logger = new cffwk.base.logs.Logger();
+		var fileName = getDirectoryFromPath(getBaseTemplatePath()) & 'cffwk-' & dateFormat(now(), 'yyyymmdd') & '.log';
+		var file = new cffwk.base.logs.FileAppender(logger, fileName, 'all');
+		var screen = new cffwk.base.logs.ScreenAppender(logger, 'all');
+		getApp().set('screenLogger', screen);
+		return logger;
+	}
+
 	public cffwk.base.engines.EngineInterface function detectEngine() {
 		var detector = new cffwk.base.engines.EngineDetector();
 		return detector.getEngine();
@@ -100,20 +117,29 @@ component accessors='true' {
 
 		var app = getApp();
 		app.reset();
+		var log = createLogger();
+
+		log.info('start configuration of cffwk', this);
 		app.set('load_in_progress', true);
 		app.set('chrono', new cffwk.model.Chrono());
 		app.get('chrono').start('Config');
 
+		log.debug('create new instance of config object', this);
 		var cfg = newConfigObject();
+		log.debug('instance is ' & getComponentMetaData(cfg).fullName, this);
 		var engines = ['RailoEngine.cfc', 'LuceeEngine.cfc', 'ColdfusionEngine', 'Cf9Engine'];
 
 		if (!isInstanceOf(cfg, 'cffwk.base.conf.Config')) {
+			log.error('Config object must be at least an heritance of base.conf.Config', this);
 			throw('Config object must be at least an heritance of base.conf.Config');
 		}
 
 		app.set('config', cfg);
+		log.debug('Call preConfigProcess', this);
 		preConfigProcess();
+		log.debug('preConfigProcess called', this);
 
+		log.debug('Start to add default parameters', this);
 		app.set('version', '0.12');
 		addParam('version', getVersion());
 
@@ -145,28 +171,38 @@ component accessors='true' {
 
 		addParamByEnv('debug', 'debug', true);
 
+		log.debug('Call setParams(), specific and overrided parameters', this);
 		app.get('chrono').start('Params init');
 		setParams();
 		app.get('chrono').end('Params init');
+		log.debug('setParams() called', this);
 
+		log.debug('Load config parameters', this);
 		app.get('chrono').start('Params load');
 		getConfig().loadParams();
 		app.get('chrono').end('Params load');
+		log.debug('Config parameters loaded', this);
 
+		log.debug('Correct views folders', this);
 		app.get('chrono').start('Check views');
 		_checkViewFolders();
 		app.get('chrono').end('Check views');
+		log.debug('Views folders corrected', this);
 
+		log.debug('Detect engine', this);
 		app.get('chrono').start('Detect engine');
 		setEngine(detectEngine());
 		app.get('chrono').end('Detect engine');
+		log.debug('Engine detected', this);
 
 		if (!isNull(getConfig().getParam('datasource'))) {
+			log.debug('Set Datasource', this);
 			this.datasource = getConfig().getParam('datasource');
 			this.defaultdatasource = getConfig().getParam('datasource');
 		}
 
 		if (!isNull(getConfig().getParam('defaultLocale'))) {
+			log.debug('Set defaultLocale', this);
 			setLocale(getConfig().getParam('defaultLocale'));
 		}
 
@@ -188,6 +224,7 @@ component accessors='true' {
 
 		}
 
+		setLogger(log);
 		app.delete('load_in_progress');
 	}
 
@@ -229,6 +266,7 @@ component accessors='true' {
 
 		iocAdapter.addObject(getEngine(), 'engine');
 		iocAdapter.addObject(getChrono(), 'chrono');
+		iocAdapter.addObject(getLogger(), 'logger');
 
 		if (!isNull(getConfig().getParam('render'))) {
 			var render = iocAdapter.getObject( getConfig().getParam('render') );
@@ -297,6 +335,7 @@ component accessors='true' {
 
 		if (getConfig().getParam('debug')) {
 			getApp().get('chrono').printResults();
+			getApp().get('screenLogger').printLogs();
 
 		}
 
