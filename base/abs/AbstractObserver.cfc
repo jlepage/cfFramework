@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****/
 component abstract='true' output='false' accessors='true' {
 
+	property type='cffwk.base.abs.AbstractObservable' name='observable';
+
 	public cffwk.base.abs.AbstractObserver function init(cffwk.base.abs.AbstractObservable observable) {
 		if (!isNull(variables.observable)) {
 			register(arguments.observable);
@@ -31,7 +33,7 @@ component abstract='true' output='false' accessors='true' {
 		arguments.observable.registerObserver(this);
 	}
 
-	public void function notify() {
+	public void function notify(struct parameters = {}) {
 		writeOutput('Notification recieved from observable object ' & getComponentMetaData(variables.observable).fullName);
 	}
 

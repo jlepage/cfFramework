@@ -29,11 +29,11 @@ component output='false' extends='cffwk.base.abs.AbstractObserver' accessors='tr
 	}
 
 
-	public void function notify() {
-		if (structKeyExists(arguments, 'level') && structKeyExists(arguments, 'message') && structKeyExists(arguments, 'caller')) {
+	public void function notify(struct parameters = {}) {
+		if (structKeyExists(arguments.parameters, 'level') && structKeyExists(arguments.parameters, 'message') && structKeyExists(arguments.parameters, 'caller')) {
 
-			if (variables.observable.isApplicable(arguments.level, variables.minLevel)) {
-				var toAppend = variables.observable.getDefautMessageLine(argumentCollection= arguments);
+			if (variables.observable.isApplicable(arguments.parameters.level, variables.minLevel)) {
+				var toAppend = variables.observable.getDefautMessageLine(argumentCollection= arguments.parameters);
 				arrayAppend(variables.logs, toAppend);
 
 			}

@@ -29,9 +29,9 @@ component abstract='true' output='false' accessors='true' {
 		arrayAppend(variables.observers, arguments.observer);
 	}
 
-	package void function notifyObservers() {
+	package void function notifyObservers(struct parameters = {}) {
 		for (var i = 1; i <= arrayLen(variables.observers); i++) {
-			variables.observers[i].notify(argumentsCollection= arguments);
+			variables.observers[i].notify(arguments.parameters);
 		}
 	}
 

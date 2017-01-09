@@ -37,8 +37,8 @@ component output='false' extends='cffwk.base.abs.AbstractObservable' accessors='
 
 	public void function log(required string level, required string message, required component caller) output=true {
 		if (structKeyExists(variables.levels, lCase(arguments.level))) {
-			writeDump(arguments);
-			notifyObservers({'level'= lCase(arguments.level), 'message'= arguments.message, 'caller'= arguments.caller});
+			var params = {'level'= lCase(arguments.level), 'message'= arguments.message, 'caller'= arguments.caller};
+			notifyObservers(params);
 
 		} else {
 			throw('the Log Level "' & arguments.level & '" is unknow');
@@ -46,9 +46,9 @@ component output='false' extends='cffwk.base.abs.AbstractObservable' accessors='
 		}
 	}
 
-	public string function getDefautMessageLine(required string caller, required string level, required string message) {
-		var date = dateFormat(now(), 'yyyy/mm/dd') & ' - ' & timeFormat(now(), 'HH:mm:ss:l'); 
-		var className = getComponentMetaData(arguments.caller).fullName;
+	public string function getDefautMessageLine(required component caller, required string level, required string message) {
+		var date = dateFormat(now(), 'yyyy/mm/dd') & ' - ' & timeFormat(now(), 'HH:mm:ss:l');
+		var className = getMetaData(arguments.caller).fullName;
 		return date & ' [' & className & '] ' & uCase(arguments.level) & ' ' & arguments.message & ' - ' & getTickCount();
 	}
 

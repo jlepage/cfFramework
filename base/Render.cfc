@@ -20,6 +20,7 @@ component output='false' accessors='true' {
 	pageencoding 'utf-8';
 
 	property type='cffwk.base.scopes.Applicationscope' name='Application';
+	property type='cffwk.base.logs.Logger' name='logger';
 	property type='cffwk.base.conf.Config' name='config';
 	property type='cffwk.base.Router' name='router';
 

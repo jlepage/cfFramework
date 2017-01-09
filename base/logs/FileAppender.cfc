@@ -22,25 +22,29 @@ component output='false' extends='cffwk.base.abs.AbstractObserver' accessors='tr
 	property type='string' name='fileName';
 
 	public cffwk.base.logs.FileAppender function init(required cffwk.base.logs.Logger logger, required string filename, string minLevel = 'info') {
-		super.init(arguments.logger);
 		variables.filename = arguments.filename;
 		variables.minLevel = arguments.minLevel;
 
+		super.init(arguments.logger);
+		register(arguments.logger);
+
 		if (!fileExists(variables.filename)) {
-			notify({'level'= 'info', 'message'= 'init this log file', 'caller'= this});
-			
+			this.notify({'level'= 'info', 'message'= 'init this log file', 'caller'= this});
+
 		}
 
 		return this;
 	}
 
 
-	public void function notify() {
-		if (structKeyExists(arguments, 'level') && structKeyExists(arguments, 'message') && structKeyExists(arguments, 'caller')) {
+	public void function notify(struct parameters = {}) {
+		if (structKeyExists(arguments.parameters, 'level') && structKeyExists(arguments.parameters, 'message') && structKeyExists(arguments.parameters, 'caller')) {
 
-			if (variables.observable.isApplicable(arguments.level, variables.minLevel)) {
-				var toAppend = variables.observable.getDefautMessageLine(argumentCollection= arguments);
-				fileAppend(variables.filename, toAppend);
+			if (variables.observable.isApplicable(arguments.parameters.level, variables.minLevel)) {
+				var toAppend = variables.observable.getDefautMessageLine(argumentCollection= arguments.parameters);
+				var pFile = fileOpen(variables.filename, 'append');
+				fileWriteLine(pFile, toAppend);
+				fileClose(pFile);
 
 			}
 		}

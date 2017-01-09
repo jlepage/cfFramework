@@ -21,6 +21,7 @@ component output='false' accessors='true' {
 	property type='array' name='routes';
 	property type='cffwk.base.conf.Config' name='config';
 	property type='component' name='engine';
+	property type='cffwk.base.logs.Logger' name='logger';
 	property type='cffwk.model.iocAdapters.iocAdapterInterface' name='iocAdapter';
 
 	property type='struct' name='cacheRouteIds';

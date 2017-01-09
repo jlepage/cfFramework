@@ -100,6 +100,7 @@ component accessors='true' {
 		var fileName = getDirectoryFromPath(getBaseTemplatePath()) & 'cffwk-' & dateFormat(now(), 'yyyymmdd') & '.log';
 		var file = new cffwk.base.logs.FileAppender(logger, fileName, 'all');
 		var screen = new cffwk.base.logs.ScreenAppender(logger, 'all');
+		logger.info('logger created', this);
 		getApp().set('screenLogger', screen);
 		return logger;
 	}
@@ -117,29 +118,30 @@ component accessors='true' {
 
 		var app = getApp();
 		app.reset();
-		var log = createLogger();
+		var logger = createLogger();
+		setLogger(logger);
 
-		log.info('start configuration of cffwk', this);
+		logger.info('start configuration of cffwk', this);
 		app.set('load_in_progress', true);
 		app.set('chrono', new cffwk.model.Chrono());
 		app.get('chrono').start('Config');
 
-		log.debug('create new instance of config object', this);
+		logger.debug('create new instance of config object', this);
 		var cfg = newConfigObject();
-		log.debug('instance is ' & getComponentMetaData(cfg).fullName, this);
+		logger.debug('instance is ' & getMetaData(cfg).fullName, this);
 		var engines = ['RailoEngine.cfc', 'LuceeEngine.cfc', 'ColdfusionEngine', 'Cf9Engine'];
 
 		if (!isInstanceOf(cfg, 'cffwk.base.conf.Config')) {
-			log.error('Config object must be at least an heritance of base.conf.Config', this);
+			logger.error('Config object must be at least an heritance of base.conf.Config', this);
 			throw('Config object must be at least an heritance of base.conf.Config');
 		}
 
 		app.set('config', cfg);
-		log.debug('Call preConfigProcess', this);
+		logger.debug('Call preConfigProcess', this);
 		preConfigProcess();
-		log.debug('preConfigProcess called', this);
+		logger.debug('preConfigProcess called', this);
 
-		log.debug('Start to add default parameters', this);
+		logger.debug('Start to add default parameters', this);
 		app.set('version', '0.12');
 		addParam('version', getVersion());
 
@@ -171,38 +173,38 @@ component accessors='true' {
 
 		addParamByEnv('debug', 'debug', true);
 
-		log.debug('Call setParams(), specific and overrided parameters', this);
+		logger.debug('Call setParams(), specific and overrided parameters', this);
 		app.get('chrono').start('Params init');
 		setParams();
 		app.get('chrono').end('Params init');
-		log.debug('setParams() called', this);
+		logger.debug('setParams() called', this);
 
-		log.debug('Load config parameters', this);
+		logger.debug('Load config parameters', this);
 		app.get('chrono').start('Params load');
 		getConfig().loadParams();
 		app.get('chrono').end('Params load');
-		log.debug('Config parameters loaded', this);
+		logger.debug('Config parameters loaded', this);
 
-		log.debug('Correct views folders', this);
+		logger.debug('Correct views folders', this);
 		app.get('chrono').start('Check views');
 		_checkViewFolders();
 		app.get('chrono').end('Check views');
-		log.debug('Views folders corrected', this);
+		logger.debug('Views folders corrected', this);
 
-		log.debug('Detect engine', this);
+		logger.debug('Detect engine', this);
 		app.get('chrono').start('Detect engine');
 		setEngine(detectEngine());
 		app.get('chrono').end('Detect engine');
-		log.debug('Engine detected', this);
+		logger.debug('Engine detected', this);
 
 		if (!isNull(getConfig().getParam('datasource'))) {
-			log.debug('Set Datasource', this);
+			logger.debug('Set Datasource', this);
 			this.datasource = getConfig().getParam('datasource');
 			this.defaultdatasource = getConfig().getParam('datasource');
 		}
 
 		if (!isNull(getConfig().getParam('defaultLocale'))) {
-			log.debug('Set defaultLocale', this);
+			logger.debug('Set defaultLocale', this);
 			setLocale(getConfig().getParam('defaultLocale'));
 		}
 
@@ -224,7 +226,6 @@ component accessors='true' {
 
 		}
 
-		setLogger(log);
 		app.delete('load_in_progress');
 	}
 
