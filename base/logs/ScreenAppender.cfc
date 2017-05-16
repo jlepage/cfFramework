@@ -21,10 +21,10 @@ component output='false' extends='cffwk.base.abs.AbstractObserver' accessors='tr
 	property type='string' name='minLevel';
 	property type='array' name='logs';
 
-	public cffwk.base.logs.ScreenAppender function init(required cffwk.base.logs.Logger logger, string minLevel = 'info') {
-		super.init(arguments.logger);
+	public cffwk.base.logs.ScreenAppender function init(required cffwk.base.logs.Logger logger, string minLevel = 'debug') {
 		variables.minLevel = arguments.minLevel;
 		variables.logs = arrayNew(1);
+		super.init(arguments.logger);
 		return this;
 	}
 
@@ -43,6 +43,10 @@ component output='false' extends='cffwk.base.abs.AbstractObserver' accessors='tr
 	public void function printLogs() output=true {
 		writeDump(variables.logs);
 
+	}
+
+	public void function reset() output=false {
+		variables.logs = arrayNew(1);
 	}
 
 }

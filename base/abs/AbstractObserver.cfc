@@ -21,7 +21,7 @@ component abstract='true' output='false' accessors='true' {
 	property type='cffwk.base.abs.AbstractObservable' name='observable';
 
 	public cffwk.base.abs.AbstractObserver function init(cffwk.base.abs.AbstractObservable observable) {
-		if (!isNull(variables.observable)) {
+		if (isNull(variables.observable)) {
 			register(arguments.observable);
 		}
 

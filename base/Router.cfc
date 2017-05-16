@@ -167,6 +167,7 @@ component output='false' accessors='true' {
 			return urlRoute;
 		}
 
+		writeDump(variables.routes);
 		throw('Route "' & arguments.routeId & '" not found');
 	}
 

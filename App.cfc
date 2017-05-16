@@ -323,6 +323,10 @@ component accessors='true' {
 
 		}
 
+		getApp().get('screenLogger').reset();
+
+		getLogger().debug('Process URL : ' & arguments.targetPage, this);
+
 		getIocAdapter().getObject('RequestScope');
 		getApp().get('chrono').start('Request');
 	}
